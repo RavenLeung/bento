@@ -1,6 +1,8 @@
 node_modules
 .next
 .vercel
+.preview
+.turbo
 .env
 .env.local
 .env.*.local
@@ -8,4 +10,6 @@ coverage
 playwright-report
 test-results
 *.tsbuildinfo
+*.log
+.eslintcache
 .DS_Store

@@ -2,26 +2,24 @@
 
 本文面向开发、测试和运维人员，说明项目结构、运行模式、核心业务规则、数据流、部署与排障方法。产品功能概览见根目录 [README](../README.md)。
 
-## 1. 当前环境
+## 1. 运行环境
 
 | 环境 | 地址 | 模式 | 用途 |
 | --- | --- | --- | --- |
-| 本地 | `http://localhost:3000` | 默认 demo，可接 Neon | 日常开发、单元测试、E2E |
-| Staging | `https://bento-staging.vercel.app` | `SHOWCASE_MODE=false`、`DEMO_MODE=true` | 测试完整结账、Staff、订单追踪 |
-| Production | `https://bento-lac.vercel.app` | `SHOWCASE_MODE=true` | 公开交互展示，结账和 Staff 关闭 |
+| 本地 | `http://localhost:3000` | 默认 demo，可接 PostgreSQL | 日常开发、单元测试、E2E |
+| Preview | 部署平台生成的 HTTPS 地址 | 按需设置 `DEMO_MODE=true` | 联调完整结账、Staff、订单追踪 |
+| Production | 你自己的 HTTPS 域名 | `SHOWCASE_MODE=false`，或按需开启展示 | 真实收款或公开演示 |
 
-Vercel 项目：`ravenleungs-projects/bento`。数据库为 Neon `bento-db`（`syd1`），已连接 Production 和 Preview。
-
-> Staging 使用 demo 支付，不会真正向 Square 扣款。要测试真实卡支付，必须把该环境改为 `DEMO_MODE=false` 并配置 Square Sandbox 凭据。
+> Preview 使用 demo 支付时不会产生真实扣款。要测试真实卡支付，必须设置 `DEMO_MODE=false` 并配置 Square Sandbox 凭据。
 
 ## 2. 技术栈
 
 | 层 | 技术 | 说明 |
 | --- | --- | --- |
 | 应用 | Next.js 16 App Router、React 19、TypeScript | 客户界面、API、Staff 和 Webhook 同仓库 |
-| 样式 | Tailwind CSS 3 | 移动优先，CSS 变量支持深色模式 |
+| 样式 | Tailwind CSS 3 | 移动优先，固定浅色主题（红/白/黑） |
 | 拖放 | `@dnd-kit/core` | 桌面鼠标和手机长按拖放 |
-| 数据库 | Neon PostgreSQL + `postgres.js` | 事务、advisory lock、JSONB |
+| 数据库 | PostgreSQL（Neon 或兼容服务）+ `postgres.js` | 事务、advisory lock、JSONB |
 | Schema | Drizzle schema | 只用于表定义和类型；运行时查询用 `postgres.js` |
 | 支付/POS | Square Web Payments SDK + Orders API | 浏览器 tokenization，服务端付款和订单同步 |
 | 邮件 | Resend | 确认、Ready 通知；未配置时写日志 |
@@ -70,7 +68,7 @@ demo-data/                   导入用菜品数据
 
 - Node.js 24+（脚本使用 `.mts` 和顶层 `await`）
 - npm 11+
-- 可选：Neon 数据库、Square Sandbox、Resend 账号
+- 可选：PostgreSQL 数据库、Square Sandbox、Resend 账号
 
 ### 4.2 启动
 
@@ -133,7 +131,7 @@ isDemoMode =
 | --- | --- | --- |
 | 本地 demo | `DEMO_MODE=true`，无 DB | 内存订单、demo 菜单、Staff 免登录 |
 | 本地完整 | `DEMO_MODE=false` + DB + Square | 真实报价、Square Sandbox 卡支付 |
-| Vercel Staging | `SHOWCASE_MODE=false`、`DEMO_MODE=true` + DB | 持久化 demo 订单，完整结账和 Staff |
+| Preview | `SHOWCASE_MODE=false`、`DEMO_MODE=true` + DB | 持久化 demo 订单，完整结账和 Staff |
 | 展示模式 | `SHOWCASE_MODE=true` | 展示菜单和 Builder，结账/Staff 关闭 |
 | 生产 | `DEMO_MODE=false` + 全套凭据 | 真实付款、邮件、Cron |
 
@@ -143,7 +141,7 @@ isDemoMode =
 
 - `/staff` 重定向到 `/`
 - `/api/staff/*`、`/api/checkout`、`/api/quote` 返回 404
-- 菜单、时段、Builder、拖放、Pick For Me、深色模式仍可使用
+- 菜单、时段、Builder、拖放、Pick For Me、固定浅色主题仍可使用
 
 `vercel.json` 故意没有 Cron 配置，因为展示模式没有后台任务。
 
@@ -159,7 +157,7 @@ isDemoMode =
 - `RESEND_API_KEY`、非示例 `EMAIL_FROM`
 - `CRON_SECRET`
 
-Vercel Preview 有例外：`VERCEL_ENV=preview` 且 `DEMO_MODE=true` 时允许缺少 Square/Resend/Cron，用于 staging 测试。不要在生产环境使用这个例外。
+Vercel Preview 有例外：`VERCEL_ENV=preview` 且 `DEMO_MODE=true` 时允许缺少 Square/Resend/Cron，用于预览环境测试。不要在生产环境使用这个例外。
 
 ## 6. 环境变量
 
@@ -170,6 +168,7 @@ Vercel Preview 有例外：`VERCEL_ENV=preview` 且 `DEMO_MODE=true` 时允许�
 | `STORE_ADDRESS` | 否 | 取餐地址 |
 | `STORE_TIMEZONE` | 否 | 默认 `Australia/Sydney` |
 | `STORE_CURRENCY` | 否 | 默认 `AUD`，后端金额单位为分 |
+| `MENU_IMAGE_HOSTS` | 否 | 逗号分隔的图片 HTTPS 主机名，支持通配符；留空使用 demo 主机和 Square CDN |
 | `SHOWCASE_MODE` | 否 | `true` 关闭结账和 Staff |
 | `DEMO_MODE` | 否 | `true` 使用 demo 支付、菜单回退和 Staff 免登录 |
 | `DATABASE_URL` | 完整模式必需 | PostgreSQL 连接串，建议 `?sslmode=require` |
@@ -271,7 +270,7 @@ PENDING_PAYMENT ──付款成功──> PAID ──Staff/KDS──> READY ─�
 - 手机：长按 300ms 后拖动到固定托盘；快速上下滑动仍然滚动页面。
 - 空闲 3 秒后播放 `Hold and drag` 提示，显示 2.2 秒；持续空闲会重复播放，任何交互都会重置计时。
 - 已有菜品、结账打开、Bento 面板打开或系统要求减少动画时不播放提示。
-- 深色模式跟随系统，用户切换后写入 `localStorage` 的 `gemeshi-theme`。
+- 网站固定使用浅色主题（红 `#C62020`、白 `#FFFFFF`、黑 `#141414`），不跟随系统深色模式。
 - 桌面光标使用筷子图片：可交互元素 hover 时打开，按住/拖动时合上。
 
 ## 9. API 一览
@@ -367,78 +366,78 @@ Playwright 会自动启动 `npm run dev`（`DEMO_MODE=true`）。覆盖：
 - 手机长按拖放、滑动滚动冲突
 - Regular / Large 盒型、酱料上限
 - Pick For Me
-- 深色模式持久化
+- 固定浅色主题（系统深色偏好下仍为浅色）
 - 完整 demo 下单、Ready、Picked up
 
-### 12.3 对 Staging 跑 E2E
+### 12.3 对 Preview 跑 E2E
 
 ```bash
-PLAYWRIGHT_BASE_URL=https://bento-staging.vercel.app npx playwright test
+PLAYWRIGHT_BASE_URL=https://<your-preview-domain> npx playwright test
 ```
 
-设置 `PLAYWRIGHT_BASE_URL` 后不会启动本地 dev server。测试会真实写入 staging 数据库并产生订单，仅用于测试环境。
+设置 `PLAYWRIGHT_BASE_URL` 后不会启动本地 dev server。测试会真实写入该环境的数据库并产生订单，仅用于测试环境。
 
 如果本机缺少 Chromium 系统依赖，需要先执行 `npx playwright install-deps chromium`（需要 sudo），或使用已安装依赖的 CI/容器。
 
 ### 12.4 手动 smoke test
 
 ```bash
-curl -s https://bento-staging.vercel.app/api/health
-curl -s https://bento-staging.vercel.app/api/menu
-curl -s https://bento-staging.vercel.app/api/availability
+curl -s https://<your-domain>/api/health
+curl -s https://<your-domain>/api/menu
+curl -s https://<your-domain>/api/availability
 ```
 
 Cron 必须带 secret：
 
 ```bash
 curl -H "Authorization: Bearer $CRON_SECRET" \
-  https://bento-staging.vercel.app/api/cron/process-outbox
+  https://<your-domain>/api/cron/process-outbox
 ```
 
 ## 13. 部署
 
-### 13.1 Vercel + Neon
+### 13.1 Vercel + PostgreSQL
 
 1. 在 Vercel 导入仓库，Production Branch 设为 `main`。
-2. 通过 Marketplace 创建 Neon 数据库（Sydney），连接 Production 和 Preview。
+2. 创建 PostgreSQL 数据库（Neon 或兼容服务），连接 Production 和 Preview。
 3. 执行迁移：
    ```bash
    vercel env pull .env.local --environment=development
-   # 如果 DATABASE_URL 显示为 [SENSITIVE]，从 Neon 控制台复制真实连接串到 .env.local
+   # 如果 DATABASE_URL 显示为 [SENSITIVE]，从数据库服务商控制台复制真实连接串到 .env.local
    npm run db:migrate
    ```
 4. 在 Vercel 分别配置 Production / Preview 环境变量。环境变量按环境隔离，不要只配 Development。
 5. 部署后用 `/api/health` 检查 `ok`、`showcaseMode`、`demoMode` 和 `missingConfig`。
 
-### 13.2 Staging
+### 13.2 Preview / Staging
 
-当前 staging 是独立 Preview alias：
+Preview 可以使用部署平台生成的地址，也可以绑定独立域名。以 Vercel 为例：
 
 ```bash
 vercel deploy --yes
-vercel alias set <new-preview-url> bento-staging.vercel.app
+vercel alias set <new-preview-url> <your-preview-domain>
 ```
 
 Preview 需要：
 
-- `NEXT_PUBLIC_APP_URL=https://bento-staging.vercel.app`
+- `NEXT_PUBLIC_APP_URL=https://<your-preview-domain>`
 - `SHOWCASE_MODE=false`
 - `DEMO_MODE=true`
-- `DATABASE_URL`（Neon integration 自动注入）
+- `DATABASE_URL`（数据库集成自动注入）
 - `AUTH_SECRET`、`STAFF_EMAILS`、`CRON_SECRET`
 - 如需真实 Square Sandbox：`DEMO_MODE=false` 并配置全部 Square 变量
 
 ### 13.3 Production 展示模式
 
 - `SHOWCASE_MODE=true`
-- `NEXT_PUBLIC_APP_URL=https://bento-lac.vercel.app`
+- `NEXT_PUBLIC_APP_URL=https://<your-domain>`
 - 不配置 DB、Square、Resend、Cron
 - `/api/health` 应返回 `showcaseMode: true`、`missingConfig: []`
 - `/api/checkout` 应返回 404
 
 ### 13.4 完整生产
 
-1. 配置 Neon 并执行迁移。
+1. 配置 PostgreSQL 并执行迁移。
 2. 配置 Square Sandbox/Production 全部变量。
 3. 运行 `npm run square:bootstrap` 创建分类和属性。
 4. 在 Square Dashboard 添加菜品并运行 `npm run square:check`。
@@ -470,7 +469,7 @@ Preview 需要：
 vercel logs --deployment <deployment-url> --since 10m
 vercel env ls preview
 vercel ls
-curl -s https://bento-staging.vercel.app/api/health
+curl -s https://<your-domain>/api/health
 ```
 
 ## 15. 开发约定
@@ -492,5 +491,5 @@ curl -s https://bento-staging.vercel.app/api/health
 - 展示模式没有后台任务，因此没有 Cron。
 - Vercel Hobby 的 Cron 最低频率为每天一次，分钟级恢复需要 Pro 或外部调度器。
 - `DATABASE_URL` 为空时订单只在单进程内存中，多个 serverless 实例不共享。
-- Demo 模式绕过 Staff 鉴权，只能用于本地和受控 staging。
+- Demo 模式绕过 Staff 鉴权，只能用于本地和受控预览环境。
 - 真实 Square 和 Resend 测试依赖外部账号凭据，CI 默认不执行。
