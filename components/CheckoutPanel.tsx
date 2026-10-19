@@ -469,7 +469,7 @@ export function CheckoutPanel({
             ) : null}
 
             {selectedPickup ? (
-              <div className="mt-3 flex items-center gap-2.5 rounded-xl bg-leaf/8 px-3 py-2.5 text-[11px] font-bold text-moss">
+              <div className="mt-3 flex items-center gap-2.5 rounded-xl bg-ink/5 px-3 py-2.5 text-[11px] font-bold text-ink/70">
                 <span aria-hidden="true">📍</span>
                 <span>
                   Pickup at {selectedPickup.label} · {config.storeAddress}
@@ -499,7 +499,7 @@ export function CheckoutPanel({
                     "w-full rounded-xl border bg-paper px-3.5 py-3 text-sm font-semibold outline-none transition placeholder:text-ink/25 focus:ring-2 disabled:opacity-60",
                     nameError
                       ? "border-chili focus:border-chili focus:ring-chili/15"
-                      : "border-ink/12 focus:border-leaf focus:ring-leaf/15"
+                      : "border-ink/12 focus:border-chili focus:ring-chili/15"
                   )}
                 />
                 <span id="checkout-name-help" className={cn("mt-1 block text-[10px] font-semibold", nameError ? "text-chili" : "text-ink/35")}>
@@ -524,7 +524,7 @@ export function CheckoutPanel({
                     "w-full rounded-xl border bg-paper px-3.5 py-3 text-sm font-semibold outline-none transition placeholder:text-ink/25 focus:ring-2 disabled:opacity-60",
                     emailError
                       ? "border-chili focus:border-chili focus:ring-chili/15"
-                      : "border-ink/12 focus:border-leaf focus:ring-leaf/15"
+                      : "border-ink/12 focus:border-chili focus:ring-chili/15"
                   )}
                 />
                 <span id="checkout-email-help" className={cn("mt-1 block text-[10px] font-semibold", emailError ? "text-chili" : "text-ink/35")}>
