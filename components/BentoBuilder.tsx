@@ -505,10 +505,6 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
       onDragCancel={() => setActiveDragItem(null)}
     >
       <div className="relative min-h-dvh overflow-x-clip">
-      <div className="pointer-events-none absolute -right-20 top-8 rotate-[-8deg] text-[12rem] opacity-[0.14] sm:-right-24 sm:top-12 sm:text-[18rem]" aria-hidden="true">
-        🍱
-      </div>
-
       <header className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-4 pt-5 sm:px-6">
         <a href="/" className="group flex items-center gap-2.5" aria-label="Gemeshi Bento Lab home">
           <span className="grid h-10 w-10 place-items-center rounded-2xl bg-yuzu text-xl shadow-sm ring-1 ring-ink/10 transition group-hover:-rotate-3">
@@ -536,8 +532,8 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
       </header>
 
       <main className="relative z-10 mx-auto max-w-7xl px-4 pb-36 pt-6 sm:px-6 sm:pb-32 lg:pb-16 lg:pt-12">
-        <section className="relative">
-          <div className="max-w-3xl">
+        <section className="relative isolate">
+          <div className="relative z-20 max-w-3xl">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-paper px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-leaf shadow-sm ring-1 ring-ink/5">
                 <span className="relative flex h-2 w-2">
@@ -561,8 +557,9 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
               waiting when you walk in.
             </p>
           </div>
-          <div className="pointer-events-none absolute right-[5%] top-24 hidden xl:block" aria-hidden="true">
-            <div className="animate-float text-7xl drop-shadow-sm">🥢</div>
+          <div className="pointer-events-none absolute -right-20 top-4 z-0 flex flex-col items-center xl:right-[5%] xl:top-20" aria-hidden="true">
+            <div className="relative z-10 hidden animate-float text-7xl drop-shadow-sm xl:block">🥢</div>
+            <div className="relative z-0 rotate-[-8deg] text-[14rem] leading-none xl:-mt-10 xl:text-[12rem]">🍱</div>
           </div>
         </section>
 

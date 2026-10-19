@@ -1,7 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { Unbounded } from "next/font/google";
 import "@/app/globals.css";
 import { THEME_COLORS, THEME_STORAGE_KEY } from "@/lib/theme";
+
+const unbounded = Unbounded({
+  subsets: ["latin"],
+  variable: "--font-unbounded",
+  display: "swap"
+});
 
 export const metadata: Metadata = {
   title: {
@@ -27,7 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="min-h-dvh bg-rice font-body text-ink antialiased">
+      <body className={`${unbounded.variable} min-h-dvh bg-rice font-body text-ink antialiased`}>
         {children}
       </body>
     </html>

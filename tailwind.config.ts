@@ -20,8 +20,16 @@ const config: Config = {
         chili: "rgb(var(--color-chili) / <alpha-value>)"
       },
       fontFamily: {
-        display: ["ui-rounded", "\"Avenir Next\"", "Avenir", "system-ui", "sans-serif"],
-        body: ["\"Avenir Next\"", "Avenir", "system-ui", "sans-serif"]
+        display: ["var(--font-unbounded)", "ui-rounded", "\"Avenir Next\"", "Avenir", "system-ui", "sans-serif"],
+        body: [
+          "var(--font-unbounded)",
+          "\"Avenir Next\"",
+          "Avenir",
+          "\"PingFang TC\"",
+          "\"Microsoft JhengHei\"",
+          "system-ui",
+          "sans-serif"
+        ]
       },
       boxShadow: {
         soft: "var(--shadow-soft)",
