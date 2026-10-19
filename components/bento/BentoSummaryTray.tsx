@@ -91,7 +91,7 @@ export function BentoSummaryTray({
             </div>
 
             <div className="shrink-0 text-right">
-              <p className="font-display text-lg font-black leading-none tabular-nums">
+              <p data-testid="tray-total" className="font-display text-lg font-black leading-none tabular-nums">
                 {formatMoney(totalCents, currency)}
               </p>
               <p className="mt-1 text-[8px] font-black uppercase tracking-wide text-ink/35">Tap to edit</p>
