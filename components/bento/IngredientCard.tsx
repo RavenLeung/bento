@@ -19,10 +19,10 @@ interface IngredientCardProps {
 }
 
 const DIETARY_BADGE_STYLES: Record<string, string> = {
-  vegetarian: "bg-leaf/10 text-moss ring-leaf/20",
-  vegan: "bg-moss/10 text-moss ring-moss/20",
-  "gluten-free": "bg-yuzu/20 text-ink/65 ring-yuzu/40",
-  "high-protein": "bg-salmon/15 text-chili ring-salmon/25"
+  vegetarian: "bg-ink/5 text-ink/60 ring-ink/10",
+  vegan: "bg-ink/5 text-ink/60 ring-ink/10",
+  "gluten-free": "bg-ink/5 text-ink/60 ring-ink/10",
+  "high-protein": "bg-chili/10 text-chili ring-chili/20"
 };
 
 export function IngredientCard({ item, quantity, onAdd, onRemove }: IngredientCardProps) {
@@ -94,8 +94,8 @@ export function IngredientCard({ item, quantity, onAdd, onRemove }: IngredientCa
         !item.soldOut && "chopsticks-open-target",
         !item.soldOut && !isDragging && "lg:hover:-translate-y-0.5 lg:hover:rotate-[-0.35deg]",
         selected
-          ? "border-moss/45 bg-moss/[0.035] shadow-[0_8px_24px_rgba(36,79,61,.09)] dark:shadow-none"
-          : "border-ink/8 hover:border-leaf/25 hover:shadow-[0_8px_24px_rgba(28,36,31,.06)]",
+          ? "border-moss/45 bg-moss/[0.035] shadow-[0_8px_24px_rgba(20,20,20,.09)]"
+          : "border-ink/8 hover:border-leaf/25 hover:shadow-[0_8px_24px_rgba(20,20,20,.06)]",
         item.soldOut && "opacity-50",
         !item.soldOut && isPressing && !isDragging && "animate-press-glow scale-[0.985]",
         isDragging && "scale-[0.985] opacity-35 shadow-none"
@@ -108,7 +108,7 @@ export function IngredientCard({ item, quantity, onAdd, onRemove }: IngredientCa
         <ItemImage
           item={item}
           sizes="(max-width: 640px) 92px, 96px"
-          className="object-contain drop-shadow-[0_8px_10px_rgba(28,36,31,0.18)] transition duration-300 group-hover:scale-105 group-hover:-rotate-2 dark:drop-shadow-[0_8px_12px_rgba(0,0,0,0.55)]"
+          className="object-contain drop-shadow-[0_8px_10px_rgba(20,20,20,0.16)] transition duration-300 group-hover:scale-105 group-hover:-rotate-2"
           emojiClassName="relative text-[2.55rem] drop-shadow-sm sm:text-[3rem]"
         />
         {!item.soldOut ? (

@@ -140,11 +140,11 @@ export function SquarePaymentForm({
   return (
     <div>
       {config.demoMode ? (
-        <div className="rounded-2xl border border-dashed border-leaf/30 bg-leaf/5 p-4">
+        <div className="rounded-2xl border border-dashed border-ink/15 bg-ink/[0.03] p-4">
           <div className="flex items-start gap-3">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-leaf/10 text-lg">🧪</span>
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-ink/5 text-lg">🧪</span>
             <div>
-              <p className="text-sm font-extrabold text-moss">Demo checkout</p>
+              <p className="text-sm font-extrabold text-ink">Demo checkout</p>
               <p className="mt-1 text-xs leading-relaxed text-ink/55">
                 No card will be charged. This creates a paid demo order and sends it straight to the demo kitchen screen.
               </p>

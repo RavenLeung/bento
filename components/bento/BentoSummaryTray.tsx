@@ -68,7 +68,7 @@ export function BentoSummaryTray({
           ref={setNodeRef}
           data-testid={dropEnabled ? "bento-drop-mobile" : undefined}
           className={cn(
-            "relative overflow-hidden rounded-[1.4rem] border border-ink/10 bg-paper/95 shadow-[0_-10px_34px_rgba(28,36,31,.16)] backdrop-blur-md transition duration-200 dark:shadow-[0_-10px_34px_rgba(0,0,0,.55)]",
+            "relative overflow-hidden rounded-[1.4rem] border border-ink/10 bg-paper/95 shadow-[0_-10px_34px_rgba(20,20,20,.14)] backdrop-blur-md transition duration-200",
             dropEnabled && dragActive && !isOver && "animate-drop-target-pulse ring-2 ring-leaf/35",
             dropEnabled && dragActive && isOver && "ring-2 ring-leaf/40",
             dropEnabled && isOver && "scale-[1.015] bg-leaf/[0.09] ring-4 ring-leaf/70"
@@ -93,8 +93,8 @@ export function BentoSummaryTray({
                     className={cn(
                       "relative grid h-5 w-5 place-items-center overflow-hidden rounded-[0.35rem] text-[0.55rem] leading-none",
                       portion
-                        ? "bg-white ring-1 ring-black/10 dark:ring-white/15"
-                        : "checker border border-dashed border-ink/10 bg-white/40 dark:bg-white/10"
+                        ? "bg-white ring-1 ring-black/10"
+                        : "checker border border-dashed border-ink/10 bg-white/40"
                     )}
                     style={portion ? { backgroundColor: `${portion.item.color}66` } : undefined}
                   >

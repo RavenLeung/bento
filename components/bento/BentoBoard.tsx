@@ -125,7 +125,7 @@ export function BentoBoard({
         })}
       </div>
 
-      <div className="relative mt-4 overflow-hidden rounded-[1.7rem] border-[7px] border-nori bg-[#2c2c25] p-2 shadow-inner">
+      <div className="relative mt-4 overflow-hidden rounded-[1.7rem] border-[7px] border-nori bg-nori p-2 shadow-inner">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-7 bg-gradient-to-b from-white/10 to-transparent" />
         <div className="mb-1 flex items-center justify-between px-1">
           <span className="text-[9px] font-black uppercase tracking-[0.24em] text-yuzu/75">Gemeshi Bento Lab</span>
@@ -134,7 +134,7 @@ export function BentoBoard({
           </span>
         </div>
         <div
-          className="grid grid-cols-3 gap-1.5 rounded-[1.2rem] bg-[#e8dcc7] p-1.5 dark:bg-[#3a3a31] sm:gap-2"
+          className="grid grid-cols-3 gap-1.5 rounded-[1.2rem] bg-ink/[0.06] p-1.5 sm:gap-2"
           aria-label={
             box
               ? `${box.name}, ${totalPortions} of ${capacity} dishes and ${sauceCount} of ${MAX_SAUCE_PORTIONS} sauces filled`
@@ -147,7 +147,7 @@ export function BentoBoard({
               return (
                 <div
                   key={`empty-${index}`}
-                  className="checker flex aspect-[1.45/1] items-center justify-center rounded-xl border border-dashed border-ink/10 bg-white/25 dark:bg-white/[0.06]"
+                  className="checker flex aspect-[1.45/1] items-center justify-center rounded-xl border border-dashed border-ink/10 bg-white/35"
                   aria-hidden="true"
                 >
                   <span className="text-[10px] font-bold text-ink/20">empty</span>
@@ -196,7 +196,7 @@ export function BentoBoard({
               return (
                 <div
                   key={`empty-sauce-${index}`}
-                  className="flex min-h-10 items-center justify-center rounded-xl border border-dashed border-ink/10 bg-white/25 px-2 text-center text-[8px] font-bold uppercase tracking-wide text-ink/25 dark:bg-white/[0.06]"
+                  className="flex min-h-10 items-center justify-center rounded-xl border border-dashed border-ink/10 bg-white/35 px-2 text-center text-[8px] font-bold uppercase tracking-wide text-ink/25"
                   aria-hidden="true"
                 >
                   Optional sauce
@@ -239,7 +239,7 @@ export function BentoBoard({
           <div
             className={cn(
               "h-full rounded-full transition-all duration-500 ease-out",
-              totalPortions >= capacity ? "bg-chili" : "bg-gradient-to-r from-leaf to-yuzu"
+              totalPortions >= capacity ? "bg-chili" : "bg-gradient-to-r from-ink to-chili"
             )}
             style={{ width: `${fillPercent}%` }}
           />
@@ -256,7 +256,7 @@ export function BentoBoard({
           "mt-3 rounded-2xl px-3 py-2.5 text-xs font-semibold leading-relaxed",
           missingProtein || missingVegetable
             ? "bg-yuzu/20 text-ink/70"
-            : "bg-leaf/10 text-moss"
+            : "bg-ink/5 text-ink/60"
         )}
         aria-live="polite"
       >
@@ -297,10 +297,10 @@ function MacroPill({ label, value, required = false }: { label: string; value: n
     <div
       className={cn(
         "rounded-xl border px-1 py-1.5",
-        ok ? "border-leaf/20 bg-leaf/8" : "border-ink/8 bg-ink/[0.025]"
+        ok ? "border-ink/15 bg-ink/5" : "border-ink/8 bg-ink/[0.025]"
       )}
     >
-      <span className={cn("block text-sm font-black tabular-nums", ok ? "text-moss" : "text-ink/30")}>
+      <span className={cn("block text-sm font-black tabular-nums", ok ? "text-ink" : "text-ink/30")}>
         {value}
       </span>
       <span className="block text-[9px] font-bold uppercase tracking-wide text-ink/45">

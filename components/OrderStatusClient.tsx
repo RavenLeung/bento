@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn, formatMoney } from "@/lib/utils";
 import type { OrderStatus, PublicConfig, PublicOrder } from "@/lib/types";
 
@@ -27,13 +26,13 @@ const STATUS_COPY: Record<
     eyebrow: "Ready",
     title: "Your bento is ready.",
     body: "Come on up to the counter and show your pickup code. We will keep it waiting for you.",
-    tone: "bg-yuzu text-nori"
+    tone: "bg-nori text-white"
   },
   PICKED_UP: {
     eyebrow: "Collected",
     title: "Lunch secured.",
     body: "Thanks for building a bento with us. We hope every slot hits the spot.",
-    tone: "bg-leaf/10 text-moss"
+    tone: "bg-ink/5 text-ink/60"
   },
   CANCELED: {
     eyebrow: "Canceled",
@@ -120,7 +119,6 @@ export function OrderStatusClient({
           </span>
         </a>
         <div className="flex shrink-0 items-center gap-2">
-          <ThemeToggle />
           <a href="/" className="whitespace-nowrap rounded-full bg-paper px-3.5 py-2 text-xs font-extrabold text-moss shadow-sm ring-1 ring-ink/5">
             Build another
           </a>
@@ -129,7 +127,7 @@ export function OrderStatusClient({
 
       <main className="mx-auto max-w-3xl px-4 sm:px-6">
         {showConfirmation && showPickupCode ? (
-          <div className="mb-4 flex items-center gap-3 rounded-2xl border border-leaf/15 bg-leaf/10 px-4 py-3 text-sm font-bold text-moss" role="status">
+          <div className="mb-4 flex items-center gap-3 rounded-2xl border border-ink/15 bg-ink/5 px-4 py-3 text-sm font-bold text-ink" role="status">
             <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-paper/80 text-xs">✓</span>
             Payment confirmed. Your order is with the kitchen.
           </div>
@@ -144,7 +142,7 @@ export function OrderStatusClient({
               </h1>
               <p className="mt-3 max-w-md text-sm font-medium leading-relaxed opacity-65">{copy.body}</p>
             </div>
-            <div className={cn("relative grid h-16 w-16 shrink-0 place-items-center rounded-[1.4rem] bg-white/55 text-4xl dark:bg-white/10 sm:h-20 sm:w-20 sm:text-5xl", order.status === "READY" && "animate-float")} aria-hidden="true">
+            <div className={cn("relative grid h-16 w-16 shrink-0 place-items-center rounded-[1.4rem] bg-white/55 text-4xl sm:h-20 sm:w-20 sm:text-5xl", order.status === "READY" && "animate-float")} aria-hidden="true">
               {order.status === "READY" ? "🍱" : order.status === "PICKED_UP" ? "🥢" : order.status === "FAILED" ? "💳" : "👩‍🍳"}
               {order.status === "READY" ? (
                 <span className="absolute -right-1 -top-1 h-3.5 w-3.5 animate-ping rounded-full bg-chili" />
@@ -179,18 +177,18 @@ export function OrderStatusClient({
                 return (
                   <div key={label} className="relative text-center">
                     {index > 0 ? (
-                      <div className={cn("absolute left-[-50%] right-1/2 top-3.5 h-0.5 -translate-y-1/2", index <= step ? "bg-leaf" : "bg-ink/10")} />
+                      <div className={cn("absolute left-[-50%] right-1/2 top-3.5 h-0.5 -translate-y-1/2", index <= step ? "bg-ink" : "bg-ink/10")} />
                     ) : null}
                     <div
                       className={cn(
                         "relative z-10 mx-auto grid h-7 w-7 place-items-center rounded-full border-2 text-[10px] font-black transition",
-                        complete ? "border-leaf bg-leaf text-white" : "border-ink/10 bg-paper text-ink/25",
+                        complete ? "border-ink bg-ink text-white" : "border-ink/10 bg-paper text-ink/25",
                         current && order.status === "READY" && "ring-4 ring-yuzu/50"
                       )}
                     >
                       {index < step ? "✓" : index + 1}
                     </div>
-                    <p className={cn("mt-1.5 text-[9px] font-bold", complete ? "text-moss" : "text-ink/30")}>{label}</p>
+                    <p className={cn("mt-1.5 text-[9px] font-bold", complete ? "text-ink" : "text-ink/30")}>{label}</p>
                   </div>
                 );
               })}
@@ -224,7 +222,7 @@ export function OrderStatusClient({
                       : line.section === "vegetable"
                         ? "bg-leaf"
                         : line.section === "sauce"
-                          ? "bg-[#9b6a45]"
+                          ? "bg-ink/35"
                           : "bg-yuzu"
                   )}
                 />

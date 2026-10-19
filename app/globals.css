@@ -4,39 +4,21 @@
 
 :root {
   color-scheme: light;
-  --color-ink: 28 36 31;
-  --color-moss: 36 79 61;
-  --color-leaf: 63 122 93;
-  --color-rice: 247 242 232;
-  --color-paper: 255 253 248;
-  --color-salmon: 242 139 114;
-  --color-yuzu: 244 201 93;
-  --color-nori: 23 37 30;
-  --color-chili: 201 85 61;
-  --shadow-soft: 0 16px 40px rgba(28, 36, 31, 0.1);
-  --shadow-lift: 0 24px 80px rgba(28, 36, 31, 0.18);
-  --grain-dot: rgba(28, 36, 31, 0.055);
-  --checker-line: rgba(28, 36, 31, 0.035);
-  --body-glow: #fff7d6;
+  --color-ink: 20 20 20;
+  --color-moss: 198 32 32;
+  --color-leaf: 20 20 20;
+  --color-rice: 255 255 255;
+  --color-paper: 255 255 255;
+  --color-salmon: 198 32 32;
+  --color-yuzu: 198 32 32;
+  --color-nori: 20 20 20;
+  --color-chili: 198 32 32;
+  --shadow-soft: 0 16px 40px rgba(20, 20, 20, 0.08);
+  --shadow-lift: 0 24px 80px rgba(20, 20, 20, 0.16);
+  --grain-dot: rgba(20, 20, 20, 0.045);
+  --checker-line: rgba(20, 20, 20, 0.03);
+  --body-glow: #f8eeee;
   --grain: radial-gradient(circle at 1px 1px, var(--grain-dot) 1px, transparent 0);
-}
-
-.dark {
-  color-scheme: dark;
-  --color-ink: 241 236 226;
-  --color-moss: 129 191 160;
-  --color-leaf: 116 183 146;
-  --color-rice: 11 17 14;
-  --color-paper: 22 32 26;
-  --color-salmon: 242 139 114;
-  --color-yuzu: 244 201 93;
-  --color-nori: 8 15 11;
-  --color-chili: 244 148 130;
-  --shadow-soft: 0 16px 40px rgba(0, 0, 0, 0.45);
-  --shadow-lift: 0 24px 80px rgba(0, 0, 0, 0.6);
-  --grain-dot: rgba(255, 255, 255, 0.05);
-  --checker-line: rgba(255, 255, 255, 0.06);
-  --body-glow: #1a3426;
 }
 
 * {
@@ -50,7 +32,6 @@ html {
 body {
   background-image: var(--grain), radial-gradient(circle at 8% 0%, var(--body-glow) 0, transparent 32rem);
   background-size: 12px 12px, auto;
-  transition: background-color 200ms ease, color 200ms ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -113,12 +94,12 @@ body {
 }
 
 ::selection {
-  background: #f4c95d;
-  color: #17251e;
+  background: #c62020;
+  color: #ffffff;
 }
 
 :focus-visible {
-  outline: 3px solid rgb(var(--color-leaf));
+  outline: 3px solid rgb(var(--color-chili));
   outline-offset: 3px;
 }
 
@@ -130,7 +111,7 @@ select {
 }
 
 input[type="checkbox"] {
-  accent-color: rgb(var(--color-leaf));
+  accent-color: rgb(var(--color-chili));
 }
 
 .safe-bottom {
@@ -154,19 +135,6 @@ input[type="checkbox"] {
     linear-gradient(-45deg, transparent 75%, var(--checker-line) 75%);
   background-size: 18px 18px;
   background-position: 0 0, 0 9px, 9px -9px, -9px 0;
-}
-
-.dark .bg-moss,
-.dark .bg-leaf {
-  background-color: #2f6b50;
-}
-
-.dark .hover\:bg-nori:hover {
-  background-color: #245a43;
-}
-
-.dark .border-moss {
-  border-color: #4f8a6c;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -342,11 +310,6 @@ input[type="checkbox"] {
   will-change: box-shadow;
 }
 
-.dark .pick-for-me-cta {
-  --cta-glow-ring: 0.22;
-  --cta-glow-soft: 0.34;
-}
-
 .pick-for-me-cta::before {
   content: "";
   position: absolute;
@@ -391,7 +354,7 @@ input[type="checkbox"] {
   100% {
     box-shadow:
       0 0 0 0 rgb(var(--color-yuzu) / 0),
-      0 4px 12px rgb(28 36 31 / 0.08);
+      0 4px 12px rgb(20 20 20 / 0.08);
   }
   50% {
     box-shadow:

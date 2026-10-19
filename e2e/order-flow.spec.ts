@@ -126,23 +126,12 @@ test("Pick For Me fills a large box and selects no sauces", async ({ page }) => 
   await expect(page.getByTestId("tray-sauce-count")).toHaveCount(0);
 });
 
-test("dark mode follows the system, toggles, and survives a reload", async ({ page }) => {
+test("uses the single light theme even when the system prefers dark", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "dark" });
   await page.goto("/");
 
   const html = page.locator("html");
-  await expect(html).toHaveClass(/dark/);
-  await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute("content", "#0b110e");
-
-  await page.getByTestId("theme-toggle").click();
   await expect(html).not.toHaveClass(/dark/);
-  await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute("content", "#f7f2e8");
-
-  await page.reload();
-  await expect(html).not.toHaveClass(/dark/);
-
-  await page.getByTestId("theme-toggle").click();
-  await expect(html).toHaveClass(/dark/);
-  await page.reload();
-  await expect(html).toHaveClass(/dark/);
+  await expect(page.getByTestId("theme-toggle")).toHaveCount(0);
+  await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute("content", "#FFFFFF");
 });

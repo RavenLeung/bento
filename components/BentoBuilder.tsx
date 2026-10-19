@@ -26,7 +26,6 @@ import { BentoSummaryTray } from "@/components/bento/BentoSummaryTray";
 import { IngredientCard } from "@/components/bento/IngredientCard";
 import { ItemImage } from "@/components/bento/ItemImage";
 import { CheckoutPanel, type SummaryLine } from "@/components/CheckoutPanel";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   DESKTOP_BENTO_DROP_ID,
   MOBILE_BENTO_DROP_ID,
@@ -530,7 +529,6 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
               Demo menu
             </span>
           ) : null}
-          <ThemeToggle />
           {!config.showcaseMode ? (
             <a
               href="/staff"
@@ -661,7 +659,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
               {notice ? (
                 <div
                   data-testid="builder-notice"
-                  className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-moss px-4 py-3 text-xs font-semibold text-white shadow-sm"
+                  className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-nori px-4 py-3 text-xs font-semibold text-white shadow-sm"
                   role="status"
                 >
                   <span>{notice}</span>
@@ -725,7 +723,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
                 })}
               </div>
 
-              <div className="mt-10 rounded-[1.75rem] bg-moss p-5 text-white shadow-soft sm:p-6">
+              <div className="mt-10 rounded-[1.75rem] bg-nori p-5 text-white shadow-soft sm:p-6">
                 <div className="flex items-start gap-4">
                   <span className="text-3xl" aria-hidden="true">👩‍🍳</span>
                   <div>
