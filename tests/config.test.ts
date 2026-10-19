@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const RELEVANT_ENV = [
   "NODE_ENV",
+  "VERCEL_ENV",
   "SHOWCASE_MODE",
   "DEMO_MODE",
   "NEXT_PUBLIC_APP_URL",
@@ -90,6 +91,31 @@ describe("runtime configuration", () => {
     expect(publicConfig.showcaseMode).toBe(true);
     expect(publicConfig.checkoutEnabled).toBe(false);
     expect(getMissingProductionConfig()).toEqual([]);
+  });
+
+  it("allows demo checkout on a Vercel preview with a database", async () => {
+    setEnv("NODE_ENV", "production");
+    setEnv("VERCEL_ENV", "preview");
+    setEnv("DEMO_MODE", "true");
+    setEnv("NEXT_PUBLIC_APP_URL", "https://bento-staging.vercel.app");
+    setEnv("DATABASE_URL", "postgres://user:pass@example.com/bento?sslmode=require");
+    setEnv("AUTH_SECRET", "x".repeat(32));
+    const { getMissingProductionConfig, isDemoMode } = await import("@/lib/config");
+
+    expect(isDemoMode).toBe(true);
+    expect(getMissingProductionConfig()).toEqual([]);
+  });
+
+  it("rejects demo mode in a Vercel production deployment", async () => {
+    setEnv("NODE_ENV", "production");
+    setEnv("VERCEL_ENV", "production");
+    setEnv("DEMO_MODE", "true");
+    setEnv("NEXT_PUBLIC_APP_URL", "https://bento-lac.vercel.app");
+    setEnv("DATABASE_URL", "postgres://user:pass@example.com/bento?sslmode=require");
+    setEnv("AUTH_SECRET", "x".repeat(32));
+    const { getMissingProductionConfig } = await import("@/lib/config");
+
+    expect(getMissingProductionConfig()).toContain("DEMO_MODE must not be true in production");
   });
 
   it("still requires a clean HTTPS app URL in showcase mode", async () => {

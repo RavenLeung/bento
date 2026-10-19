@@ -104,6 +104,7 @@ export function getAppUrl(requestUrl?: string): string {
 export function getMissingProductionConfig(): string[] {
   if (process.env.NODE_ENV !== "production") return [];
 
+  const isVercelPreview = process.env.VERCEL_ENV === "preview";
   const missing: string[] = [];
   if (!env.NEXT_PUBLIC_APP_URL) {
     missing.push("NEXT_PUBLIC_APP_URL");
@@ -119,7 +120,10 @@ export function getMissingProductionConfig(): string[] {
   if (!env.AUTH_SECRET || env.AUTH_SECRET.length < 32) {
     missing.push("AUTH_SECRET (32+ characters)");
   }
-  if (env.DEMO_MODE === "true") missing.push("DEMO_MODE must not be true in production");
+  if (env.DEMO_MODE === "true" && !isVercelPreview) {
+    missing.push("DEMO_MODE must not be true in production");
+  }
+  if (isVercelPreview && env.DEMO_MODE === "true") return missing;
   if (staffEmails.size === 0 || staffEmails.has("owner@example.com")) {
     missing.push("STAFF_EMAILS (replace the example allowlist)");
   }

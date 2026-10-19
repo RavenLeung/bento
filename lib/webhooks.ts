@@ -1,4 +1,5 @@
 import { sqlClient } from "@/lib/db/client";
+import { parseJsonColumn } from "@/lib/db/json";
 import { enqueueOutbox } from "@/lib/outbox";
 import {
   getOrderBySquareOrderId,
@@ -33,7 +34,10 @@ export async function processSquareEvent(eventId: string): Promise<void> {
   if (!row || row.status === "processed") return;
 
   try {
-    const event = row.payload as SquareWebhookEvent;
+    const event = parseJsonColumn<SquareWebhookEvent>(
+      row.payload,
+      {} as SquareWebhookEvent
+    );
     await handleSquareEvent(event);
     await sqlClient`
       update webhook_events

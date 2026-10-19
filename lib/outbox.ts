@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { sqlClient } from "@/lib/db/client";
+import { parseJsonColumn } from "@/lib/db/json";
 import { getOrderById } from "@/lib/repositories/orders";
 import { sendConfirmation, sendReadyIfNeeded } from "@/lib/email/order-emails";
 import { refreshCatalogCache } from "@/lib/catalog";
@@ -53,7 +54,10 @@ export async function processOutbox(limit = 20): Promise<{ processed: number; fa
   let failed = 0;
   for (const job of jobs) {
     try {
-      await processJob(String(job.kind), job.payload as Record<string, unknown>);
+      await processJob(
+        String(job.kind),
+        parseJsonColumn<Record<string, unknown>>(job.payload, {})
+      );
       await sqlClient`
         update outbox_jobs set status = 'done', updated_at = now() where id = ${job.id}
       `;

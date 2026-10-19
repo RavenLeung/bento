@@ -12,10 +12,10 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "node --env-file-if-exists=.env.local --env-file-if-exists=.env --import tsx scripts/migrate.ts",
+    "db:migrate": "node --env-file-if-exists=.env.local --env-file-if-exists=.env --import tsx scripts/migrate.mts",
     "db:studio": "drizzle-kit studio",
-    "square:bootstrap": "node --env-file-if-exists=.env.local --env-file-if-exists=.env --import tsx scripts/square-bootstrap.ts",
-    "square:check": "node --env-file-if-exists=.env.local --env-file-if-exists=.env --import tsx scripts/square-check.ts"
+    "square:bootstrap": "node --env-file-if-exists=.env.local --env-file-if-exists=.env --import tsx scripts/square-bootstrap.mts",
+    "square:check": "node --env-file-if-exists=.env.local --env-file-if-exists=.env --import tsx scripts/square-check.mts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

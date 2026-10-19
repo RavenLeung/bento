@@ -1,11 +1,8 @@
-import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { env } from "@/lib/config";
-import * as schema from "@/lib/db/schema";
 
 const globalForDb = globalThis as unknown as {
   bentoPostgres?: ReturnType<typeof postgres>;
-  bentoDrizzle?: ReturnType<typeof drizzle<typeof schema>>;
 };
 
 export const sqlClient = env.DATABASE_URL
@@ -17,10 +14,6 @@ export const sqlClient = env.DATABASE_URL
         connect_timeout: 10,
         ssl: env.DATABASE_URL.includes("sslmode=require") ? "require" : false
       }))
-  : null;
-
-export const db = sqlClient
-  ? (globalForDb.bentoDrizzle ??= drizzle(sqlClient, { schema }))
   : null;
 
 export function requireDb() {
