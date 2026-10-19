@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --grain: radial-gradient(circle at 1px 1px, rgba(28, 36, 31, 0.055) 1px, transparent 0);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-image: var(--grain), radial-gradient(circle at 8% 0%, #fff7d6 0, transparent 32rem);
+  background-size: 12px 12px, auto;
+}
+
+::selection {
+  background: #f4c95d;
+  color: #17251e;
+}
+
+:focus-visible {
+  outline: 3px solid #3f7a5d;
+  outline-offset: 3px;
+}
+
+button,
+a,
+input,
+select {
+  touch-action: manipulation;
+}
+
+input[type="checkbox"] {
+  accent-color: #244f3d;
+}
+
+.safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.checker {
+  background-image:
+    linear-gradient(45deg, rgba(28, 36, 31, 0.035) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(28, 36, 31, 0.035) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(28, 36, 31, 0.035) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(28, 36, 31, 0.035) 75%);
+  background-size: 18px 18px;
+  background-position: 0 0, 0 9px, 9px -9px, -9px 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(28px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes checkout-dialog-in {
+  from {
+    transform: translate(-50%, calc(-50% + 28px));
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.32s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+.animate-checkout-panel {
+  animation: slide-up 0.32s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+@media (min-width: 640px) {
+  .animate-checkout-panel {
+    animation-name: checkout-dialog-in;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out both;
+}
