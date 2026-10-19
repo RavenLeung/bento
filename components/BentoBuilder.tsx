@@ -316,28 +316,28 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto max-w-7xl px-4 pb-32 pt-8 sm:px-6 lg:pb-16 lg:pt-12">
+      <main className="relative z-10 mx-auto max-w-7xl px-4 pb-36 pt-6 sm:px-6 sm:pb-32 lg:pb-16 lg:pt-12">
         <section className="relative">
           <div className="max-w-3xl">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-paper px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-leaf shadow-sm ring-1 ring-ink/5">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-paper px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-leaf shadow-sm ring-1 ring-ink/5">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-leaf opacity-50" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-leaf" />
                 </span>
                 {availability ? (availability.acceptingOrders ? "Kitchen open" : "Orders paused") : "Fresh today"}
               </span>
-              <span className="rounded-full bg-paper/75 px-3 py-1.5 text-[10px] font-bold text-ink/45 ring-1 ring-ink/5">
+              <span className="rounded-full bg-paper/75 px-2.5 py-1 text-[9px] font-bold text-ink/45 ring-1 ring-ink/5">
                 Ready in about 10 minutes
               </span>
             </div>
-            <h1 className="mt-5 font-display text-[clamp(3rem,10vw,6.7rem)] font-black leading-[0.88] tracking-[-0.055em]">
+            <h1 className="mt-4 font-display text-[clamp(2.45rem,9vw,6.7rem)] font-black leading-[0.9] tracking-[-0.055em]">
               Your lunch.
               <span className="ml-2 inline-block -rotate-2 rounded-2xl bg-yuzu px-2 pb-1 pt-0.5 text-moss sm:ml-4">
                 Your rules.
               </span>
             </h1>
-            <p className="mt-5 max-w-xl text-base font-medium leading-relaxed text-ink/55 sm:text-lg">
+            <p className="mt-4 max-w-xl text-[13px] font-medium leading-relaxed text-ink/55 sm:text-lg">
               Pick a box, choose every little thing inside, and skip the lunch queue. We will have it packed and
               waiting when you walk in.
             </p>
@@ -368,8 +368,8 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
           </section>
         ) : (
           <div id="builder" className="mt-9 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-8 xl:grid-cols-[minmax(0,1fr)_25rem]">
-            <div className="order-2 min-w-0 lg:order-1">
-              <div className="rounded-[1.75rem] border border-ink/8 bg-paper/75 p-3.5 shadow-sm backdrop-blur-sm sm:p-4">
+            <div className="order-1 min-w-0 lg:order-1">
+              <div className="rounded-2xl border border-ink/8 bg-paper/55 p-3 sm:p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-[0.16em] text-leaf">Filter the menu</p>
@@ -436,7 +436,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
                 </div>
               ) : null}
 
-              <div className="mt-7 space-y-9">
+              <div className="mt-6 space-y-8 sm:space-y-9">
                 {(["protein", "vegetable", "starch"] as const).map((section) => {
                   const meta = SECTION_META[section];
                   const items = filteredBySection[section];
@@ -448,21 +448,21 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
                             <span className="text-xl" aria-hidden="true">{meta.icon}</span>
                             <p className="text-[9px] font-black uppercase tracking-[0.2em] text-leaf">{meta.kicker}</p>
                           </div>
-                          <h2 id={`section-${section}`} className="mt-1 font-display text-2xl font-black tracking-tight sm:text-[1.7rem]">
+                          <h2 id={`section-${section}`} className="mt-0.5 font-display text-xl font-black tracking-tight sm:text-2xl">
                             {meta.title}
                           </h2>
                         </div>
                         <span
                           className={cn(
-                            "mb-1 shrink-0 rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-wide",
-                            meta.required ? "bg-yuzu/25 text-ink/60" : "bg-ink/5 text-ink/40"
+                            "mb-1 shrink-0 text-[9px] font-black uppercase tracking-[0.14em]",
+                            meta.required ? "text-chili/70" : "text-ink/35"
                           )}
                         >
                           {meta.note}
                         </span>
                       </div>
                       {items.length > 0 ? (
-                        <div className="grid grid-cols-2 gap-2.5 sm:gap-3 xl:grid-cols-3">
+                        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3 xl:grid-cols-3">
                           {items.map((item) => (
                             <IngredientCard
                               key={item.id}
@@ -504,7 +504,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
               </div>
             </div>
 
-            <aside className="order-1 self-start lg:order-2 lg:sticky lg:top-4">
+            <aside className="order-2 hidden self-start lg:sticky lg:top-4 lg:block">
               <BentoBoard
                 boxes={boxes}
                 activeBoxId={box.id}
@@ -619,7 +619,7 @@ function FilterChip({
           ? allergen
             ? "border-chili/30 bg-chili/10 text-chili"
             : "border-moss bg-moss text-white"
-          : "border-ink/8 bg-white/60 text-ink/55 hover:border-leaf/30 hover:text-ink"
+          : "border-ink/8 bg-transparent text-ink/50 hover:border-leaf/30 hover:text-ink"
       )}
     >
       {label}
@@ -635,9 +635,9 @@ function BuilderSkeleton() {
         {[0, 1, 2].map((section) => (
           <div key={section}>
             <div className="mb-3 h-10 w-52 animate-pulse rounded-xl bg-ink/8" />
-            <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {[0, 1, 2, 3].map((card) => (
-                <div key={card} className="h-44 animate-pulse rounded-3xl bg-ink/8" />
+                <div key={card} className="h-36 animate-pulse rounded-3xl bg-ink/8" />
               ))}
             </div>
           </div>
