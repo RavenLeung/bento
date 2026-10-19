@@ -473,6 +473,10 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
 
   function openCheckout() {
     dismissDragHint();
+    if (!config.checkoutEnabled) {
+      setNotice("This is an interactive demo. Checkout is disabled.");
+      return;
+    }
     if (!valid || !box) {
       setNotice("Add at least one protein and one vegetable before checking out.");
       return;
@@ -516,18 +520,25 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
           </span>
         </a>
         <div className="flex items-center gap-2">
-          {snapshot?.source === "demo" ? (
+          {config.showcaseMode ? (
+            <span className="inline-flex whitespace-nowrap rounded-full bg-yuzu/25 px-2 py-1 text-[8px] font-black uppercase tracking-wider text-ink/55 ring-1 ring-yuzu/40 sm:text-[9px]">
+              <span className="sm:hidden">Demo</span>
+              <span className="hidden sm:inline">Interactive demo</span>
+            </span>
+          ) : snapshot?.source === "demo" ? (
             <span className="hidden whitespace-nowrap rounded-full bg-yuzu/25 px-2 py-1 text-[8px] font-black uppercase tracking-wider text-ink/55 ring-1 ring-yuzu/40 min-[430px]:inline-flex sm:text-[9px]">
               Demo menu
             </span>
           ) : null}
           <ThemeToggle />
-          <a
-            href="/staff"
-            className="rounded-full px-3 py-2 text-xs font-extrabold text-ink/45 transition hover:bg-ink/5 hover:text-ink"
-          >
-            Staff
-          </a>
+          {!config.showcaseMode ? (
+            <a
+              href="/staff"
+              className="rounded-full px-3 py-2 text-xs font-extrabold text-ink/45 transition hover:bg-ink/5 hover:text-ink"
+            >
+              Staff
+            </a>
+          ) : null}
         </div>
       </header>
 
@@ -751,17 +762,23 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
               <button
                 type="button"
                 onClick={openCheckout}
+                disabled={!config.checkoutEnabled || !valid}
+                title={config.checkoutEnabled ? undefined : "Checkout is disabled in the interactive demo."}
                 className={cn(
                   "mt-3 hidden w-full items-center justify-center gap-2 rounded-2xl px-5 py-4 text-base font-black shadow-lg transition lg:flex",
-                  valid
+                  config.checkoutEnabled && valid
                     ? "bg-moss text-white hover:-translate-y-0.5 hover:bg-nori hover:shadow-xl"
                     : "cursor-not-allowed bg-ink/10 text-ink/35 shadow-none"
                 )}
               >
-                Review & pay
-                <span aria-hidden="true">→</span>
+                {config.checkoutEnabled ? "Review & pay" : "Preview only"}
+                {config.checkoutEnabled ? <span aria-hidden="true">→</span> : null}
               </button>
-              {!valid ? (
+              {!config.checkoutEnabled ? (
+                <p className="mt-2 hidden text-center text-[10px] font-semibold text-ink/40 lg:block">
+                  Checkout is disabled in this interactive demo.
+                </p>
+              ) : !valid ? (
                 <p className="mt-2 hidden text-center text-[10px] font-semibold text-ink/40 lg:block">
                   Add 1 protein + 1 vegetable to continue.
                 </p>
@@ -792,6 +809,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
             setBentoSheetOpen(true);
           }}
           onCheckout={openCheckout}
+          checkoutEnabled={config.checkoutEnabled}
           droppableId={MOBILE_BENTO_DROP_ID}
           dropEnabled={!isDesktop}
           dragActive={Boolean(activeDragItem)}
@@ -803,6 +821,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
           open={bentoSheetOpen}
           onClose={() => setBentoSheetOpen(false)}
           onCheckout={openCheckout}
+          checkoutEnabled={config.checkoutEnabled}
           boxes={boxes}
           activeBoxId={box.id}
           onSelectBox={selectBox}
@@ -822,7 +841,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
         />
       ) : null}
 
-      {box ? (
+      {box && config.checkoutEnabled ? (
         <CheckoutPanel
           open={checkoutOpen}
           onClose={() => setCheckoutOpen(false)}

@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { getMissingProductionConfig, isDemoMode, isSquareConfigured } from "@/lib/config";
+import {
+  getMissingProductionConfig,
+  isDemoMode,
+  isShowcaseMode,
+  isSquareConfigured
+} from "@/lib/config";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +14,7 @@ export function GET() {
     {
       ok: missingConfig.length === 0,
       demoMode: isDemoMode,
+      showcaseMode: isShowcaseMode,
       squareConfigured: isSquareConfigured,
       missingConfig,
       timestamp: new Date().toISOString()

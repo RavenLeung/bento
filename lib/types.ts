@@ -176,6 +176,8 @@ export interface StoreSettings {
 
 export interface PublicConfig {
   demoMode: boolean;
+  showcaseMode: boolean;
+  checkoutEnabled: boolean;
   squareApplicationId: string | null;
   squareLocationId: string | null;
   squareEnvironment: "sandbox" | "production";

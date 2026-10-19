@@ -9,6 +9,7 @@ interface BentoSheetProps {
   open: boolean;
   onClose: () => void;
   onCheckout: () => void;
+  checkoutEnabled: boolean;
   boxes: CatalogItem[];
   activeBoxId: string;
   onSelectBox: (id: string) => void;
@@ -31,6 +32,7 @@ export function BentoSheet({
   open,
   onClose,
   onCheckout,
+  checkoutEnabled,
   boxes,
   activeBoxId,
   onSelectBox,
@@ -161,15 +163,16 @@ export function BentoSheet({
           <button
             type="button"
             onClick={onCheckout}
-            disabled={!valid}
+            disabled={!checkoutEnabled || !valid}
+            title={checkoutEnabled ? undefined : "Checkout is disabled in the interactive demo."}
             className={cn(
               "shrink-0 rounded-xl px-5 py-3 text-sm font-black transition",
-              valid
+              checkoutEnabled && valid
                 ? "bg-moss text-white shadow-md active:scale-[0.98]"
                 : "cursor-not-allowed bg-ink/10 text-ink/35"
             )}
           >
-            Review & pay
+            {checkoutEnabled ? "Review & pay" : "Preview only"}
           </button>
         </div>
       </div>

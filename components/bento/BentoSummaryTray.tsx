@@ -19,6 +19,7 @@ interface BentoSummaryTrayProps {
   currency: string;
   onOpen: () => void;
   onCheckout: () => void;
+  checkoutEnabled: boolean;
   droppableId?: string;
   dropEnabled?: boolean;
   dragActive?: boolean;
@@ -36,6 +37,7 @@ export function BentoSummaryTray({
   currency,
   onOpen,
   onCheckout,
+  checkoutEnabled,
   droppableId,
   dropEnabled = false,
   dragActive = false
@@ -138,20 +140,21 @@ export function BentoSummaryTray({
 
           <div className="flex items-center gap-3 px-3 pb-2.5 pt-2">
             <p className="min-w-0 flex-1 truncate text-[9px] font-bold text-ink/40">
-              Free box · GST included
+              {checkoutEnabled ? "Free box · GST included" : "Demo · checkout disabled"}
             </p>
             <button
               type="button"
               onClick={onCheckout}
-              disabled={!valid}
+              disabled={!checkoutEnabled || !valid}
+              title={checkoutEnabled ? undefined : "Checkout is disabled in the interactive demo."}
               className={cn(
                 "shrink-0 rounded-xl px-4 py-2.5 text-xs font-black transition",
-                valid
+                checkoutEnabled && valid
                   ? "bg-moss text-white shadow-md active:scale-[0.98]"
                   : "cursor-not-allowed bg-ink/10 text-ink/35"
               )}
             >
-              Review & pay
+              {checkoutEnabled ? "Review & pay" : "Preview only"}
             </button>
           </div>
         </div>

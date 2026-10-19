@@ -116,7 +116,18 @@ Square for Restaurants Plus (or the appropriate Square plan with KDS) is an MVP 
 
 The built-in staff page still works as a fallback if KDS is unavailable. If Square cannot be updated from the staff page, the local order and Ready email still complete and the screen shows a warning to reconcile the Square order manually.
 
-## Database and deployment
+## Vercel showcase deployment
+
+Use showcase mode for a public, interactive menu demo without a database, Square account or email provider.
+
+1. Import the repository into Vercel and set the production branch to `main`.
+2. Add `SHOWCASE_MODE=true` and set `NEXT_PUBLIC_APP_URL` to the final HTTPS Vercel origin.
+3. Keep the store name, address, timezone and currency variables from `.env.example`. Do not set `DEMO_MODE`, `DATABASE_URL`, Square, Resend, staff or cron credentials.
+4. Deploy and open `/api/health`. It should return `ok: true`, `showcaseMode: true` and an empty `missingConfig` array.
+
+Showcase mode uses the committed demo catalog and keeps the full builder, filters, drag and drop, Pick For Me and pricing interactions. Checkout, staff routes and staff APIs are disabled. `vercel.json` intentionally has no cron schedule because the demo has no background jobs; Vercel Hobby also rejects schedules more frequent than once per day.
+
+## Full production deployment
 
 1. Create a Neon PostgreSQL database in the Sydney region.
 2. Set `DATABASE_URL` (include `?sslmode=require`) and run:
@@ -130,7 +141,7 @@ The runner records applied files in `schema_migrations`, so it is safe to run on
 4. Set a long random `AUTH_SECRET` (32+ bytes), the comma-separated `STAFF_EMAILS` allowlist, and a random `CRON_SECRET`.
 5. Deploy to Vercel and set every value from `.env.example` in the project environment. Set `NEXT_PUBLIC_APP_URL` to the final HTTPS origin and set `DEMO_MODE=false`.
    On server start, `instrumentation.ts` rejects production deployments that are missing the app URL, database, auth secret, staff allowlist, Square credentials or webhook key, Resend, or cron secret. This prevents a production instance from silently falling back to demo mode or in-memory orders.
-6. `vercel.json` schedules `/api/cron/process-outbox` every minute. Vercel Cron frequency depends on the plan; use a Pro plan or an external scheduler if minute-level recovery is required. The endpoint requires `Authorization: Bearer $CRON_SECRET`.
+6. Restore the `/api/cron/process-outbox` schedule in `vercel.json`. The endpoint needs minute-level recovery, so use a Vercel Pro plan or an external scheduler. The endpoint requires `Authorization: Bearer $CRON_SECRET`.
 7. Add the deployed webhook URL and signing key in Square, then run a sandbox card payment and verify:
    - the order appears in Square Order Manager / KDS;
    - confirmation and Ready emails arrive;

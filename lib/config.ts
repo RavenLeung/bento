@@ -10,6 +10,7 @@ const envSchema = z.object({
   STORE_ADDRESS: z.string().default("Sydney, Australia"),
   STORE_TIMEZONE: z.string().default("Australia/Sydney"),
   STORE_CURRENCY: z.string().default("AUD"),
+  SHOWCASE_MODE: z.string().optional(),
   DEMO_MODE: z.string().optional(),
   DATABASE_URL: z.string().optional(),
   AUTH_SECRET: z.string().optional(),
@@ -36,7 +37,10 @@ export const isSquareConfigured = Boolean(
   env.SQUARE_ACCESS_TOKEN && env.SQUARE_LOCATION_ID && env.SQUARE_APPLICATION_ID
 );
 
+export const isShowcaseMode = env.SHOWCASE_MODE === "true";
+
 export const isDemoMode =
+  isShowcaseMode ||
   env.DEMO_MODE === "true" ||
   (env.DEMO_MODE !== "false" &&
     process.env.NODE_ENV !== "production" &&
@@ -70,6 +74,8 @@ export const squareConfig = {
 
 export const publicConfig: PublicConfig = {
   demoMode: isDemoMode,
+  showcaseMode: isShowcaseMode,
+  checkoutEnabled: !isShowcaseMode,
   squareApplicationId: isSquareConfigured ? (env.SQUARE_APPLICATION_ID ?? null) : null,
   squareLocationId: isSquareConfigured ? (env.SQUARE_LOCATION_ID ?? null) : null,
   squareEnvironment: env.SQUARE_ENV,
@@ -107,6 +113,8 @@ export function getMissingProductionConfig(): string[] {
       missing.push("NEXT_PUBLIC_APP_URL (must be an HTTPS origin without a path)");
     }
   }
+  if (isShowcaseMode) return missing;
+
   if (!env.DATABASE_URL) missing.push("DATABASE_URL");
   if (!env.AUTH_SECRET || env.AUTH_SECRET.length < 32) {
     missing.push("AUTH_SECRET (32+ characters)");
