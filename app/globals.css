@@ -334,3 +334,107 @@ input[type="checkbox"] {
   animation: drag-hint-fly 2.1s cubic-bezier(0.22, 0.72, 0.2, 1) both;
   will-change: transform, opacity;
 }
+
+.pick-for-me-cta {
+  --cta-glow-ring: 0.16;
+  --cta-glow-soft: 0.26;
+  animation: cta-breathe 4.8s ease-in-out infinite;
+  will-change: box-shadow;
+}
+
+.dark .pick-for-me-cta {
+  --cta-glow-ring: 0.22;
+  --cta-glow-soft: 0.34;
+}
+
+.pick-for-me-cta::before {
+  content: "";
+  position: absolute;
+  top: -60%;
+  bottom: -60%;
+  left: -45%;
+  width: 34%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(255 255 255 / 0.72) 38%,
+    rgb(var(--color-yuzu) / 0.88) 58%,
+    transparent 100%
+  );
+  transform: translateX(-220%) skewX(-18deg);
+  animation: cta-shimmer 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.pick-for-me-cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 18% 28%, rgb(255 255 255 / 0.95) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 82% 68%, rgb(var(--color-yuzu) / 0.95) 0 1.3px, transparent 2.2px),
+    radial-gradient(circle at 68% 24%, rgb(255 255 255 / 0.8) 0 0.8px, transparent 1.5px);
+  animation: cta-twinkle 4.8s ease-in-out infinite;
+}
+
+.pick-for-me-cta:hover,
+.pick-for-me-cta:hover::before,
+.pick-for-me-cta:hover::after {
+  animation-duration: 2.4s;
+}
+
+@keyframes cta-breathe {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 rgb(var(--color-yuzu) / 0),
+      0 4px 12px rgb(28 36 31 / 0.08);
+  }
+  50% {
+    box-shadow:
+      0 0 0 5px rgb(var(--color-yuzu) / var(--cta-glow-ring)),
+      0 9px 28px rgb(var(--color-yuzu) / var(--cta-glow-soft));
+  }
+}
+
+@keyframes cta-shimmer {
+  0% {
+    transform: translateX(-220%) skewX(-18deg);
+  }
+  55%,
+  100% {
+    transform: translateX(560%) skewX(-18deg);
+  }
+}
+
+@keyframes cta-twinkle {
+  0%,
+  100% {
+    opacity: 0.18;
+  }
+  45% {
+    opacity: 0.95;
+  }
+  70% {
+    opacity: 0.42;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pick-for-me-cta,
+  .pick-for-me-cta::before,
+  .pick-for-me-cta::after {
+    animation: none;
+  }
+
+  .pick-for-me-cta::before {
+    display: none;
+  }
+
+  .pick-for-me-cta::after {
+    opacity: 0.32;
+  }
+}

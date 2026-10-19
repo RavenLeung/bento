@@ -71,20 +71,18 @@ export function BentoBoard({
         dropEnabled && isOver && "scale-[1.01] bg-leaf/[0.045] ring-4 ring-leaf/65"
       )}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div>
+      <div className="flex items-center justify-between gap-2 sm:gap-3">
+        <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-leaf">Your bento</p>
-          <h2 className="mt-1 font-display text-2xl font-black tracking-tight">Pack it full</h2>
+          <h2 className="mt-1 whitespace-nowrap font-display text-[1.35rem] font-black tracking-tight sm:text-2xl">Pack it full</h2>
         </div>
-        {totalPortions > 0 || sauceCount > 0 ? (
-          <button
-            type="button"
-            onClick={onClear}
-            className="rounded-full px-3 py-2 text-xs font-bold text-ink/55 transition hover:bg-ink/5 hover:text-ink"
-          >
-            Start over
-          </button>
-        ) : null}
+        <button
+          type="button"
+          onClick={onChefPick}
+          className="pick-for-me-cta relative isolate inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-yuzu/60 bg-paper px-2.5 py-2 text-[11px] font-extrabold text-ink transition duration-200 hover:-translate-y-0.5 hover:border-yuzu active:translate-y-0 active:scale-[0.97] sm:px-3.5 sm:text-xs"
+        >
+          <span className="relative z-10 whitespace-nowrap">✨ Pick For Me</span>
+        </button>
       </div>
 
       {dropEnabled && dragActive ? (
@@ -276,19 +274,21 @@ export function BentoBoard({
                 : "Nice balance. Add more if you are hungry."}
       </div>
 
-      <div className="mt-4 flex items-end justify-between gap-3 border-t border-dashed border-ink/10 pt-4">
+      <div className="mt-4 flex flex-wrap items-end justify-between gap-3 border-t border-dashed border-ink/10 pt-4">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-ink/45">Your total</p>
           <p className="font-display text-3xl font-black tracking-tight">{formatMoney(totalCents)}</p>
           <p className="text-[10px] font-semibold text-ink/40">GST included</p>
         </div>
-        <button
-          type="button"
-          onClick={onChefPick}
-          className="rounded-full border border-ink/10 bg-paper px-3.5 py-2 text-xs font-extrabold shadow-sm transition hover:-translate-y-0.5 hover:border-leaf/40 hover:shadow-md"
-        >
-          ✨ Pick For Me
-        </button>
+        {totalPortions > 0 || sauceCount > 0 ? (
+          <button
+            type="button"
+            onClick={onClear}
+            className="rounded-full px-3 py-2 text-xs font-bold text-ink/55 transition hover:bg-ink/5 hover:text-ink"
+          >
+            Start over
+          </button>
+        ) : null}
       </div>
     </section>
   );
