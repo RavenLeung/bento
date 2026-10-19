@@ -165,3 +165,113 @@ input[type="checkbox"] {
 .animate-fade-in {
   animation: fade-in 0.2s ease-out both;
 }
+
+@keyframes press-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 rgb(var(--color-leaf) / 0.32),
+      0 8px 24px rgb(var(--color-ink) / 0.08);
+  }
+  50% {
+    box-shadow:
+      0 0 0 5px rgb(var(--color-leaf) / 0.12),
+      0 10px 28px rgb(var(--color-ink) / 0.1);
+  }
+}
+
+@keyframes drag-handle-pop {
+  0% {
+    transform: scale(0.78) translateY(3px);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.06) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes drag-preview-pop {
+  0% {
+    transform: scale(0.96) rotate(1deg);
+    opacity: 0.72;
+  }
+  45% {
+    transform: scale(1.03) rotate(-1deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+@keyframes drop-target-pulse {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.996);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.006);
+  }
+}
+
+@keyframes drag-hint-fly {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.72) rotate(-7deg);
+  }
+  12% {
+    opacity: 0.9;
+  }
+  55% {
+    opacity: 0.95;
+    transform: translate3d(var(--hint-mid-x), var(--hint-mid-y), 0) scale(1.03) rotate(5deg);
+  }
+  78% {
+    opacity: 0.95;
+    transform: translate3d(var(--hint-end-x), var(--hint-end-y), 0) scale(0.88) rotate(-2deg);
+  }
+  91% {
+    opacity: 0.9;
+    transform: translate3d(var(--hint-end-x), var(--hint-end-y), 0) scale(0.9) rotate(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--hint-end-x), var(--hint-end-y), 0) scale(0.86) rotate(0);
+  }
+}
+
+.animate-press-glow {
+  animation: press-glow 0.42s ease-in-out infinite;
+}
+
+.animate-drag-handle-pop {
+  animation: drag-handle-pop 0.18s cubic-bezier(0.2, 0.9, 0.2, 1.2) both;
+}
+
+.animate-drag-preview {
+  animation: drag-preview-pop 0.32s cubic-bezier(0.2, 0.9, 0.2, 1.2) both;
+}
+
+.animate-drop-target-pulse::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 2px solid rgb(var(--color-leaf) / 0.55);
+  border-radius: inherit;
+  box-shadow: 0 0 0 1px rgb(var(--color-paper) / 0.7);
+  pointer-events: none;
+  animation: drop-target-pulse 1.5s ease-in-out infinite;
+}
+
+.animate-drag-hint-fly {
+  animation: drag-hint-fly 2.1s cubic-bezier(0.22, 0.72, 0.2, 1) both;
+  will-change: transform, opacity;
+}

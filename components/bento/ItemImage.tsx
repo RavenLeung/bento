@@ -28,6 +28,7 @@ export function ItemImage({ item, sizes, className, emojiClassName }: ItemImageP
       src={item.imageUrl}
       alt=""
       fill
+      draggable={false}
       sizes={sizes}
       className={cn("object-cover", className)}
       onError={() => setFailed(true)}

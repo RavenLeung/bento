@@ -1,13 +1,39 @@
 "use client";
 
-import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
+import {
+  DndContext,
+  DragOverlay,
+  MouseSensor,
+  TouchSensor,
+  pointerWithin,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent
+} from "@dnd-kit/core";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type CSSProperties,
+  type Dispatch,
+  type SetStateAction
+} from "react";
 import { useRouter } from "next/navigation";
 import { BentoBoard, type BoardPortion } from "@/components/bento/BentoBoard";
 import { BentoSheet } from "@/components/bento/BentoSheet";
 import { BentoSummaryTray } from "@/components/bento/BentoSummaryTray";
 import { IngredientCard } from "@/components/bento/IngredientCard";
+import { ItemImage } from "@/components/bento/ItemImage";
 import { CheckoutPanel, type SummaryLine } from "@/components/CheckoutPanel";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import {
+  DESKTOP_BENTO_DROP_ID,
+  MOBILE_BENTO_DROP_ID,
+  TOUCH_DRAG_DELAY_MS,
+  TOUCH_DRAG_TOLERANCE_PX,
+  type MenuDragData
+} from "@/lib/bento-dnd";
 import { cn } from "@/lib/utils";
 import type {
   BentoSection,
@@ -68,6 +94,25 @@ const ALLERGEN_FILTERS = [
   { key: "nuts", label: "No nuts" }
 ] as const;
 
+const DRAG_HINT_IDLE_MS = 3_000;
+const DRAG_HINT_DURATION_MS = 2_200;
+const DRAG_HINT_ACTIVITY_EVENTS = [
+  "pointerdown",
+  "pointermove",
+  "keydown",
+  "wheel",
+  "touchstart",
+  "touchmove",
+  "scroll"
+] as const;
+
+type DragHintStyle = CSSProperties & {
+  "--hint-mid-x": string;
+  "--hint-mid-y": string;
+  "--hint-end-x": string;
+  "--hint-end-y": string;
+};
+
 export function BentoBuilder({ config }: { config: PublicConfig }) {
   const router = useRouter();
   const [snapshot, setSnapshot] = useState<CatalogSnapshot | null>(null);
@@ -82,6 +127,26 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
   const [notice, setNotice] = useState<string | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [bentoSheetOpen, setBentoSheetOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [activeDragItem, setActiveDragItem] = useState<CatalogItem | null>(null);
+  const [showDragHint, setShowDragHint] = useState(false);
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: TOUCH_DRAG_DELAY_MS,
+        tolerance: TOUCH_DRAG_TOLERANCE_PX
+      }
+    })
+  );
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1024px)");
+    const updateViewport = () => setIsDesktop(media.matches);
+    updateViewport();
+    media.addEventListener("change", updateViewport);
+    return () => media.removeEventListener("change", updateViewport);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -195,14 +260,79 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
 
   const filteredOutSelections = selectedItems.filter(({ item }) => !matchesFilters(item));
   const filterCount = dietaryFilters.size + allergenFilters.size;
+  const dragHintItem =
+    filteredBySection.protein[0] ??
+    filteredBySection.vegetable[0] ??
+    filteredBySection.starch[0] ??
+    null;
 
-  function addItem(item: CatalogItem) {
+  useEffect(() => {
+    if (
+      loading ||
+      !box ||
+      !dragHintItem ||
+      totalPortions > 0 ||
+      checkoutOpen ||
+      bentoSheetOpen ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+
+    const targetId = isDesktop ? DESKTOP_BENTO_DROP_ID : MOBILE_BENTO_DROP_ID;
+    if (!document.querySelector(`[data-testid="${targetId}"]`)) return;
+
+    let timer: number | undefined;
+    const armIdleTimer = () => {
+      if (timer !== undefined) window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        setShowDragHint(true);
+        timer = window.setTimeout(() => {
+          setShowDragHint(false);
+          armIdleTimer();
+        }, DRAG_HINT_DURATION_MS);
+      }, DRAG_HINT_IDLE_MS);
+    };
+    const handleActivity = () => {
+      setShowDragHint(false);
+      armIdleTimer();
+    };
+    const handleVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        if (timer !== undefined) window.clearTimeout(timer);
+        setShowDragHint(false);
+      } else {
+        armIdleTimer();
+      }
+    };
+
+    armIdleTimer();
+    for (const eventName of DRAG_HINT_ACTIVITY_EVENTS) {
+      window.addEventListener(eventName, handleActivity, { passive: true });
+    }
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      if (timer !== undefined) window.clearTimeout(timer);
+      for (const eventName of DRAG_HINT_ACTIVITY_EVENTS) {
+        window.removeEventListener(eventName, handleActivity);
+      }
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, [bentoSheetOpen, box, checkoutOpen, dragHintItem, isDesktop, loading, totalPortions]);
+
+  function dismissDragHint() {
+    setShowDragHint(false);
+  }
+
+  function addItem(item: CatalogItem, successNotice: string | null = null) {
+    dismissDragHint();
     if (item.soldOut) return;
     if (totalPortions >= capacity) {
       setNotice("That box is full. Remove a portion or switch to the Large box.");
       return;
     }
-    setNotice(null);
+    setNotice(successNotice);
     setQuantities((current) => ({
       ...current,
       [item.id]: (current[item.id] ?? 0) + 1
@@ -234,6 +364,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
 
   function chefPick() {
     if (!box?.capacity) return;
+    dismissDragHint();
     const pool = {
       protein: filteredBySection.protein,
       vegetable: filteredBySection.vegetable,
@@ -283,6 +414,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
   }
 
   function openCheckout() {
+    dismissDragHint();
     if (!valid || !box) {
       setNotice("Add at least one protein and one vegetable before checking out.");
       return;
@@ -291,8 +423,30 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
     setCheckoutOpen(true);
   }
 
+  function handleDragStart(event: DragStartEvent) {
+    dismissDragHint();
+    const item = (event.active.data.current as MenuDragData | undefined)?.item;
+    setActiveDragItem(item ?? null);
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const item = (event.active.data.current as MenuDragData | undefined)?.item;
+    const expectedDropId = isDesktop ? DESKTOP_BENTO_DROP_ID : MOBILE_BENTO_DROP_ID;
+    setActiveDragItem(null);
+    if (!item || event.over?.id !== expectedDropId) return;
+    addItem(item, `${item.name} added to your bento.`);
+  }
+
   return (
-    <div className="relative min-h-dvh overflow-x-clip">
+    <DndContext
+      sensors={sensors}
+      collisionDetection={pointerWithin}
+      autoScroll={false}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragCancel={() => setActiveDragItem(null)}
+    >
+      <div className="relative min-h-dvh overflow-x-clip">
       <div className="pointer-events-none absolute -right-24 top-16 text-[12rem] opacity-[0.045] sm:text-[18rem]" aria-hidden="true">
         🍱
       </div>
@@ -415,6 +569,10 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
                     />
                   ))}
                 </div>
+                <p className="mt-2 text-[10px] font-semibold leading-relaxed text-ink/40">
+                  <span className="lg:hidden">Hold a dish, then drag it onto the bento tray below.</span>
+                  <span className="hidden lg:inline">Drag any dish into your bento panel, or tap Add.</span>
+                </p>
               </div>
 
               {filteredOutSelections.length > 0 ? (
@@ -435,7 +593,11 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
               ) : null}
 
               {notice ? (
-                <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-moss px-4 py-3 text-xs font-semibold text-white shadow-sm" role="status">
+                <div
+                  data-testid="builder-notice"
+                  className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-moss px-4 py-3 text-xs font-semibold text-white shadow-sm"
+                  role="status"
+                >
                   <span>{notice}</span>
                   <button type="button" onClick={() => setNotice(null)} aria-label="Dismiss message" className="text-white/60 hover:text-white">
                     ×
@@ -526,6 +688,9 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
                 onRemove={removeItem}
                 onClear={clearBox}
                 onChefPick={chefPick}
+                droppableId={DESKTOP_BENTO_DROP_ID}
+                dropEnabled={isDesktop}
+                dragActive={Boolean(activeDragItem)}
               />
               <button
                 type="button"
@@ -565,8 +730,14 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
           proteinCount={proteinCount}
           vegetableCount={vegetableCount}
           currency={config.currency}
-          onOpen={() => setBentoSheetOpen(true)}
+          onOpen={() => {
+            dismissDragHint();
+            setBentoSheetOpen(true);
+          }}
           onCheckout={openCheckout}
+          droppableId={MOBILE_BENTO_DROP_ID}
+          dropEnabled={!isDesktop}
+          dragActive={Boolean(activeDragItem)}
         />
       ) : null}
 
@@ -605,6 +776,110 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
           totalCents={totalCents}
         />
       ) : null}
+      </div>
+      {showDragHint && dragHintItem ? (
+        <DragOnboarding
+          item={dragHintItem}
+          targetId={isDesktop ? DESKTOP_BENTO_DROP_ID : MOBILE_BENTO_DROP_ID}
+        />
+      ) : null}
+      <DragOverlay dropAnimation={null}>
+        {activeDragItem ? <DragPreview item={activeDragItem} /> : null}
+      </DragOverlay>
+    </DndContext>
+  );
+}
+
+function DragPreview({ item }: { item: CatalogItem }) {
+  return (
+    <div
+      data-testid="drag-overlay"
+      className="pointer-events-none w-[min(18rem,calc(100vw-2rem))] rotate-2 rounded-2xl border border-moss/25 bg-paper/95 p-3 shadow-2xl backdrop-blur-md"
+    >
+      <div className="animate-drag-preview flex items-center gap-3">
+        <div className="relative grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-xl bg-white/70">
+          <ItemImage item={item} sizes="56px" emojiClassName="text-3xl" />
+        </div>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-black leading-tight">{item.name}</p>
+          <p className="mt-1 text-[9px] font-black uppercase tracking-[0.14em] text-leaf">
+            Drop into your bento
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DragOnboarding({ item, targetId }: { item: CatalogItem; targetId: string }) {
+  const [style, setStyle] = useState<DragHintStyle | null>(null);
+
+  useEffect(() => {
+    const source = document.querySelector<HTMLElement>(`[data-testid="menu-drag-${item.id}"]`);
+    const target = document.querySelector<HTMLElement>(`[data-testid="${targetId}"]`);
+    if (!target) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const width = 154;
+      const height = 58;
+      const margin = 12;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const clamp = (value: number, min: number, max: number) =>
+        Math.min(Math.max(value, min), Math.max(min, max));
+      const sourceRect = source?.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+
+      const startCenterX = sourceRect ? sourceRect.left + sourceRect.width / 2 : viewportWidth / 2;
+      const startCenterY = sourceRect
+        ? Math.min(sourceRect.top + sourceRect.height / 2, viewportHeight * 0.72)
+        : viewportHeight * 0.55;
+      const startLeft = clamp(startCenterX - width / 2, margin, viewportWidth - width - margin);
+      const startTop = clamp(startCenterY - height / 2, margin, viewportHeight - height - margin);
+
+      const endCenterX = targetRect.left + targetRect.width / 2;
+      const endCenterY =
+        targetId === MOBILE_BENTO_DROP_ID
+          ? targetRect.top + targetRect.height / 2
+          : targetRect.top + Math.min(targetRect.height * 0.24, 150);
+      const endLeft = clamp(endCenterX - width / 2, margin, viewportWidth - width - margin);
+      const endTop = clamp(endCenterY - height / 2, margin, viewportHeight - height - margin);
+      const deltaX = endLeft - startLeft;
+      const deltaY = endTop - startTop;
+      const arcHeight = Math.min(90, 30 + Math.abs(deltaX) * 0.12);
+
+      setStyle({
+        left: `${startLeft}px`,
+        top: `${startTop}px`,
+        "--hint-mid-x": `${deltaX * 0.52}px`,
+        "--hint-mid-y": `${deltaY * 0.4 - arcHeight}px`,
+        "--hint-end-x": `${deltaX}px`,
+        "--hint-end-y": `${deltaY}px`
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [item.id, targetId]);
+
+  if (!style) return null;
+
+  return (
+    <div
+      data-testid="drag-onboarding"
+      role="status"
+      aria-live="polite"
+      className="animate-drag-hint-fly pointer-events-none fixed z-40 flex w-[154px] items-center gap-2.5 rounded-2xl border border-leaf/35 bg-paper/85 p-2 shadow-xl backdrop-blur-md"
+      style={style}
+    >
+      <div className="relative grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-xl bg-white/75">
+        <ItemImage item={item} sizes="40px" emojiClassName="text-2xl" />
+      </div>
+      <div className="min-w-0">
+        <p className="whitespace-nowrap text-[11px] font-black leading-none">Hold and drag</p>
+        <p className="mt-1 whitespace-nowrap text-[8px] font-black uppercase tracking-[0.12em] text-leaf">
+          Onto your bento
+        </p>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useDroppable } from "@dnd-kit/core";
 import { ItemImage } from "@/components/bento/ItemImage";
 import { cn, formatMoney } from "@/lib/utils";
 import type { CatalogItem } from "@/lib/types";
@@ -16,6 +17,9 @@ interface BentoSummaryTrayProps {
   currency: string;
   onOpen: () => void;
   onCheckout: () => void;
+  droppableId?: string;
+  dropEnabled?: boolean;
+  dragActive?: boolean;
 }
 
 export function BentoSummaryTray({
@@ -28,10 +32,20 @@ export function BentoSummaryTray({
   vegetableCount,
   currency,
   onOpen,
-  onCheckout
+  onCheckout,
+  droppableId,
+  dropEnabled = false,
+  dragActive = false
 }: BentoSummaryTrayProps) {
-  const status =
-    proteinCount < 1 && vegetableCount < 1
+  const { setNodeRef, isOver } = useDroppable({
+    id: droppableId ?? "bento-tray-drop",
+    disabled: !dropEnabled || !droppableId
+  });
+  const status = dragActive
+    ? isOver
+      ? "Release to add"
+      : "Drop here to add"
+    : proteinCount < 1 && vegetableCount < 1
       ? "Add a protein + vegetable"
       : proteinCount < 1
         ? "Add a protein"
@@ -44,7 +58,16 @@ export function BentoSummaryTray({
   return (
     <div data-testid="bento-tray" className="fixed inset-x-0 bottom-0 z-30 lg:hidden">
       <div className="mx-auto max-w-xl px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
-        <div className="overflow-hidden rounded-[1.4rem] border border-ink/10 bg-paper/95 shadow-[0_-10px_34px_rgba(28,36,31,.16)] backdrop-blur-md dark:shadow-[0_-10px_34px_rgba(0,0,0,.55)]">
+        <div
+          ref={setNodeRef}
+          data-testid={dropEnabled ? "bento-drop-mobile" : undefined}
+          className={cn(
+            "relative overflow-hidden rounded-[1.4rem] border border-ink/10 bg-paper/95 shadow-[0_-10px_34px_rgba(28,36,31,.16)] backdrop-blur-md transition duration-200 dark:shadow-[0_-10px_34px_rgba(0,0,0,.55)]",
+            dropEnabled && dragActive && !isOver && "animate-drop-target-pulse ring-2 ring-leaf/35",
+            dropEnabled && dragActive && isOver && "ring-2 ring-leaf/40",
+            dropEnabled && isOver && "scale-[1.015] bg-leaf/[0.09] ring-4 ring-leaf/70"
+          )}
+        >
           <button
             type="button"
             data-testid="open-bento-board"

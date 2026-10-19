@@ -1,5 +1,6 @@
 "use client";
 
+import { useDroppable } from "@dnd-kit/core";
 import { ItemImage } from "@/components/bento/ItemImage";
 import { cn, formatMoney } from "@/lib/utils";
 import type { CatalogItem } from "@/lib/types";
@@ -23,6 +24,9 @@ interface BentoBoardProps {
   onRemove: (item: CatalogItem) => void;
   onClear: () => void;
   onChefPick: () => void;
+  droppableId?: string;
+  dropEnabled?: boolean;
+  dragActive?: boolean;
 }
 
 export function BentoBoard({
@@ -38,15 +42,31 @@ export function BentoBoard({
   totalPortions,
   onRemove,
   onClear,
-  onChefPick
+  onChefPick,
+  droppableId,
+  dropEnabled = false,
+  dragActive = false
 }: BentoBoardProps) {
   const capacity = box?.capacity ?? 6;
   const fillPercent = capacity ? Math.min(100, (totalPortions / capacity) * 100) : 0;
   const missingProtein = proteinCount < 1;
   const missingVegetable = vegetableCount < 1;
+  const { setNodeRef, isOver } = useDroppable({
+    id: droppableId ?? "bento-board-drop",
+    disabled: !dropEnabled || !droppableId
+  });
 
   return (
-    <section className="rounded-[2rem] border border-ink/10 bg-paper p-4 shadow-soft sm:p-5">
+    <section
+      ref={setNodeRef}
+      data-testid={dropEnabled ? "bento-drop-desktop" : undefined}
+      className={cn(
+        "relative rounded-[2rem] border border-ink/10 bg-paper p-4 shadow-soft transition duration-200 sm:p-5",
+        dropEnabled && dragActive && !isOver && "animate-drop-target-pulse ring-2 ring-leaf/30 ring-offset-2 ring-offset-rice",
+        dropEnabled && dragActive && isOver && "ring-2 ring-leaf/35 ring-offset-2 ring-offset-rice",
+        dropEnabled && isOver && "scale-[1.01] bg-leaf/[0.045] ring-4 ring-leaf/65"
+      )}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-leaf">Your bento</p>
@@ -62,6 +82,19 @@ export function BentoBoard({
           </button>
         ) : null}
       </div>
+
+      {dropEnabled && dragActive ? (
+        <div
+          className={cn(
+            "mt-3 rounded-2xl border border-dashed px-3 py-2 text-center text-[10px] font-black uppercase tracking-[0.14em] transition",
+            isOver
+              ? "border-leaf bg-leaf/15 text-moss"
+              : "border-leaf/35 bg-leaf/[0.045] text-leaf"
+          )}
+        >
+          {isOver ? "Release to add" : "Drop anywhere in this panel"}
+        </div>
+      ) : null}
 
       <div className="mt-4 grid grid-cols-2 gap-2" role="group" aria-label="Box size">
         {boxes.map((option) => {
