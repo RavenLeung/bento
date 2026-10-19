@@ -24,6 +24,7 @@ const envSchema = z.object({
   SQUARE_CATEGORY_PROTEIN_ID: z.string().optional(),
   SQUARE_CATEGORY_VEGETABLE_ID: z.string().optional(),
   SQUARE_CATEGORY_STARCH_ID: z.string().optional(),
+  SQUARE_CATEGORY_SAUCE_ID: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().default("Gemeshi Bento Lab <orders@example.com>"),
   CRON_SECRET: z.string().optional()
@@ -62,7 +63,8 @@ export const squareConfig = {
     box: env.SQUARE_CATEGORY_BOX_ID ?? "",
     protein: env.SQUARE_CATEGORY_PROTEIN_ID ?? "",
     vegetable: env.SQUARE_CATEGORY_VEGETABLE_ID ?? "",
-    starch: env.SQUARE_CATEGORY_STARCH_ID ?? ""
+    starch: env.SQUARE_CATEGORY_STARCH_ID ?? "",
+    sauce: env.SQUARE_CATEGORY_SAUCE_ID ?? ""
   }
 } as const;
 

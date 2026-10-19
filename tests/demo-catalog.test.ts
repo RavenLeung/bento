@@ -28,7 +28,11 @@ describe("demo catalog", () => {
     expect(sourcedDishes).toHaveLength(20);
     expect(sourcedDishes.filter((item) => item.section === "protein")).toHaveLength(11);
     expect(sourcedDishes.filter((item) => item.section === "vegetable")).toHaveLength(3);
-    expect(sourcedDishes.filter((item) => item.section === "starch")).toHaveLength(6);
+    expect(sourcedDishes.filter((item) => item.section === "starch")).toHaveLength(3);
+    expect(sourcedDishes.filter((item) => item.section === "sauce")).toHaveLength(3);
+    expect(
+      sourcedDishes.filter((item) => item.section === "sauce").map((item) => item.id)
+    ).toEqual(["starch-black-curry", "starch-yellow-curry", "starch-green-curry"]);
   });
 
   it("keeps the original demo dishes alongside the sourced dishes", () => {
@@ -58,5 +62,6 @@ describe("demo catalog", () => {
     expect(dishes.filter((item) => item.section === "protein").length).toBeGreaterThanOrEqual(2);
     expect(dishes.filter((item) => item.section === "vegetable").length).toBeGreaterThanOrEqual(3);
     expect(dishes.filter((item) => item.section === "starch").length).toBeGreaterThanOrEqual(1);
+    expect(dishes.filter((item) => item.section === "sauce").length).toBeGreaterThanOrEqual(2);
   });
 });

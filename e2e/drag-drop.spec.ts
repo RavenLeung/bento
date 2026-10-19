@@ -52,7 +52,7 @@ test("desktop drag adds one portion and shows confirmation", async ({ page }) =>
   await dragWithMouse(page, "menu-drag-protein-karaage", "bento-drop-desktop");
 
   await expect(page.getByTestId("qty-protein-karaage")).toHaveText("1");
-  await expect(page.getByLabel("Regular Bento, 1 of 6 portions filled")).toBeVisible();
+  await expect(page.getByLabel("Regular Bento, 1 of 6 dishes and 0 of 2 sauces filled")).toBeVisible();
   await expect(page.getByTestId("builder-notice")).toContainText("Chicken Karaage added to your bento.");
 });
 
@@ -68,7 +68,7 @@ test("dragging outside the bento does not add anything", async ({ page }) => {
   await page.mouse.up();
 
   await expect(page.getByTestId("add-protein-karaage")).toBeVisible();
-  await expect(page.getByLabel("Regular Bento, 0 of 6 portions filled")).toBeVisible();
+  await expect(page.getByLabel("Regular Bento, 0 of 6 dishes and 0 of 2 sauces filled")).toBeVisible();
 });
 
 test("a full bento rejects an extra drop", async ({ page }) => {
@@ -79,11 +79,11 @@ test("a full bento rejects an extra drop", async ({ page }) => {
   for (let count = 1; count < 6; count += 1) {
     await page.getByTestId("add-again-protein-karaage").click();
   }
-  await expect(page.getByLabel("Regular Bento, 6 of 6 portions filled")).toBeVisible();
+  await expect(page.getByLabel("Regular Bento, 6 of 6 dishes and 0 of 2 sauces filled")).toBeVisible();
 
   await dragWithMouse(page, "menu-drag-veg-mixed-vegetables", "bento-drop-desktop");
 
-  await expect(page.getByLabel("Regular Bento, 6 of 6 portions filled")).toBeVisible();
+  await expect(page.getByLabel("Regular Bento, 6 of 6 dishes and 0 of 2 sauces filled")).toBeVisible();
   await expect(page.getByTestId("builder-notice")).toContainText("That box is full.");
 });
 

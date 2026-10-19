@@ -5,7 +5,10 @@ import type {
 } from "@/lib/square/types";
 
 export interface SetupResult {
-  categories: Record<"box" | "protein" | "vegetable" | "starch", { id: string; name: string }>;
+  categories: Record<
+    "box" | "protein" | "vegetable" | "starch" | "sauce",
+    { id: string; name: string }
+  >;
   attributes: Record<string, string>;
   created: number;
   selectionValuesAdded: number;
@@ -15,7 +18,8 @@ const CATEGORY_NAMES = {
   box: "Bento Boxes",
   protein: "Proteins",
   vegetable: "Vegetables",
-  starch: "Starches"
+  starch: "Starches",
+  sauce: "Sauces"
 } as const;
 
 const DIETARY_VALUES = ["vegetarian", "vegan", "gluten-free", "high-protein"];

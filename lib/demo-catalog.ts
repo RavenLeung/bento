@@ -71,10 +71,10 @@ export const DEMO_CATALOG: CatalogItem[] = [
     name: "Large Bento",
     section: "box",
     priceCents: 0,
-    description: "Ten slots for a proper feast.",
+    description: "Nine slots for a proper feast.",
     emoji: "🧺",
     color: "#f28b72",
-    capacity: 10,
+    capacity: 9,
     displayOrder: 1
   }),
 
@@ -298,37 +298,37 @@ export const DEMO_CATALOG: CatalogItem[] = [
   item({
     id: "starch-black-curry",
     name: "Black Curry",
-    section: "starch",
+    section: "sauce",
     priceCents: 300,
     description: "Kanazawa-style black curry — thick, dark and full of flavour (100g).",
     emoji: "🍛",
     color: "#5b4636",
     imageUrl: photo("0012890_black-curry100g.jpeg"),
     allergens: ["gluten", "milk", "soy"],
-    displayOrder: 3
+    displayOrder: 0
   }),
   item({
     id: "starch-yellow-curry",
     name: "Yellow Curry",
-    section: "starch",
+    section: "sauce",
     priceCents: 300,
     description: "Creamy coconut curry with spices, vegan and gently spicy (100g).",
     emoji: "🍛",
     color: "#e9b949",
     imageUrl: photo("0012888_green-curry100g.jpeg"),
     dietaryTags: ["vegetarian", "vegan"],
-    displayOrder: 4
+    displayOrder: 1
   }),
   item({
     id: "starch-green-curry",
     name: "Green Curry",
-    section: "starch",
+    section: "sauce",
     priceCents: 300,
     description: "Thai-style green curry with coconut milk and a gentle kick (100g).",
     emoji: "🍛",
     color: "#6f9c57",
     imageUrl: photo("0012889_yellow-curry100g.jpeg"),
-    displayOrder: 5
+    displayOrder: 2
   }),
 
   item({

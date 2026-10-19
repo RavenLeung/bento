@@ -14,6 +14,7 @@ interface BentoSheetProps {
   onSelectBox: (id: string) => void;
   box: CatalogItem;
   portions: BoardPortion[];
+  saucePortions: BoardPortion[];
   totalCents: number;
   proteinCount: number;
   vegetableCount: number;
@@ -35,6 +36,7 @@ export function BentoSheet({
   onSelectBox,
   box,
   portions,
+  saucePortions,
   totalCents,
   proteinCount,
   vegetableCount,
@@ -137,6 +139,7 @@ export function BentoSheet({
             onSelectBox={onSelectBox}
             box={box}
             portions={portions}
+            saucePortions={saucePortions}
             totalCents={totalCents}
             proteinCount={proteinCount}
             vegetableCount={vegetableCount}

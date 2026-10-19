@@ -1,9 +1,15 @@
 import { AppError, type CatalogItem, type QuoteDraft, type QuoteSelection } from "@/lib/types";
+import {
+  MAX_SAUCE_PORTIONS,
+  MIN_PROTEIN_PORTIONS,
+  MIN_VEGETABLE_PORTIONS
+} from "@/lib/bento-rules";
 
-const SECTION_ORDER: Record<"protein" | "vegetable" | "starch", number> = {
+const SECTION_ORDER: Record<"protein" | "vegetable" | "starch" | "sauce", number> = {
   protein: 0,
   vegetable: 1,
-  starch: 2
+  starch: 2,
+  sauce: 3
 };
 
 export interface QuoteInput {
@@ -36,6 +42,7 @@ export function buildQuote({ boxItemId, selections, catalog, currency }: QuoteIn
   }
 
   let totalPortions = 0;
+  let saucePortions = 0;
   let proteinPortions = 0;
   let vegetablePortions = 0;
   const lines = [];
@@ -48,7 +55,8 @@ export function buildQuote({ boxItemId, selections, catalog, currency }: QuoteIn
     if (item.soldOut) {
       throw new AppError("OUT_OF_STOCK", `${item.name} is sold out.`, 409);
     }
-    totalPortions += quantity;
+    if (item.section === "sauce") saucePortions += quantity;
+    else totalPortions += quantity;
     if (item.section === "protein") proteinPortions += quantity;
     if (item.section === "vegetable") vegetablePortions += quantity;
 
@@ -74,10 +82,17 @@ export function buildQuote({ boxItemId, selections, catalog, currency }: QuoteIn
       409
     );
   }
-  if (proteinPortions < 1 || vegetablePortions < 1) {
+  if (saucePortions > MAX_SAUCE_PORTIONS) {
+    throw new AppError(
+      "SAUCE_LIMIT_EXCEEDED",
+      `Choose up to ${MAX_SAUCE_PORTIONS} sauces. Remove ${saucePortions - MAX_SAUCE_PORTIONS}.`,
+      409
+    );
+  }
+  if (proteinPortions < MIN_PROTEIN_PORTIONS || vegetablePortions < MIN_VEGETABLE_PORTIONS) {
     throw new AppError(
       "MINIMUM_NOT_MET",
-      "Every bento needs at least one protein and one vegetable. Starch is optional.",
+      "Every bento needs at least one protein and one vegetable. Starch and sauce are optional.",
       409
     );
   }

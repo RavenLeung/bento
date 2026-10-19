@@ -38,7 +38,8 @@ async function main() {
     box: items.filter((item) => item.section === "box").length,
     protein: items.filter((item) => item.section === "protein").length,
     vegetable: items.filter((item) => item.section === "vegetable").length,
-    starch: items.filter((item) => item.section === "starch").length
+    starch: items.filter((item) => item.section === "starch").length,
+    sauce: items.filter((item) => item.section === "sauce").length
   };
   console.log(`Mapped items: ${JSON.stringify(counts)}`);
 
@@ -55,6 +56,7 @@ async function main() {
   if (!squareConfig.categories.protein) console.warn("WARN  SQUARE_CATEGORY_PROTEIN_ID is not set; matching by category name.");
   if (!squareConfig.categories.vegetable) console.warn("WARN  SQUARE_CATEGORY_VEGETABLE_ID is not set; matching by category name.");
   if (!squareConfig.categories.starch) console.warn("WARN  SQUARE_CATEGORY_STARCH_ID is not set; matching by category name.");
+  if (!squareConfig.categories.sauce) console.warn("WARN  SQUARE_CATEGORY_SAUCE_ID is not set; matching by category name.");
   if (!squareConfig.webhookSignatureKey) console.warn("WARN  SQUARE_WEBHOOK_SIGNATURE_KEY is not set.");
 
   if (missingKeys.length > 0 || counts.box < 1 || counts.protein < 1 || counts.vegetable < 1) {

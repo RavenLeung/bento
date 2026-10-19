@@ -2,6 +2,7 @@
 
 import { useDroppable } from "@dnd-kit/core";
 import { ItemImage } from "@/components/bento/ItemImage";
+import { MAX_SAUCE_PORTIONS } from "@/lib/bento-rules";
 import { cn, formatMoney } from "@/lib/utils";
 import type { CatalogItem } from "@/lib/types";
 import type { BoardPortion } from "./BentoBoard";
@@ -9,6 +10,7 @@ import type { BoardPortion } from "./BentoBoard";
 interface BentoSummaryTrayProps {
   box: CatalogItem;
   portions: BoardPortion[];
+  saucePortions: BoardPortion[];
   capacity: number;
   totalCents: number;
   valid: boolean;
@@ -25,6 +27,7 @@ interface BentoSummaryTrayProps {
 export function BentoSummaryTray({
   box,
   portions,
+  saucePortions,
   capacity,
   totalCents,
   valid,
@@ -37,6 +40,7 @@ export function BentoSummaryTray({
   dropEnabled = false,
   dragActive = false
 }: BentoSummaryTrayProps) {
+  const sauceCount = saucePortions.length;
   const { setNodeRef, isOver } = useDroppable({
     id: droppableId ?? "bento-tray-drop",
     disabled: !dropEnabled || !droppableId
@@ -72,7 +76,7 @@ export function BentoSummaryTray({
             type="button"
             data-testid="open-bento-board"
             onClick={onOpen}
-            aria-label={`Open bento board, ${portions.length} of ${capacity} portions filled`}
+            aria-label={`Open bento board, ${portions.length} of ${capacity} dishes and ${sauceCount} of ${MAX_SAUCE_PORTIONS} sauces filled`}
             className="flex w-full items-center gap-3 px-3 pt-2.5 text-left"
           >
             <div
@@ -109,6 +113,14 @@ export function BentoSummaryTray({
                 >
                   {portions.length}/{capacity}
                 </span>
+                {sauceCount > 0 ? (
+                  <span
+                    data-testid="tray-sauce-count"
+                    className="rounded-full bg-yuzu/30 px-1.5 py-0.5 text-[9px] font-black tabular-nums text-ink/55"
+                  >
+                    Sauce {sauceCount}/{MAX_SAUCE_PORTIONS}
+                  </span>
+                ) : null}
               </div>
               <p className="mt-0.5 truncate text-[13px] font-black leading-tight">{box.name}</p>
               <p className={cn("truncate text-[10px] font-semibold", valid ? "text-leaf" : "text-ink/45")}>

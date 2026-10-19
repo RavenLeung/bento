@@ -6,15 +6,23 @@ async function addIngredient(page: Page, id: string) {
   await button.click();
 }
 
+async function clickTestId(page: Page, id: string) {
+  const element = page.getByTestId(id);
+  await element.evaluate((node) => node.scrollIntoView({ block: "center" }));
+  await element.click();
+}
+
 test("build, pay, receive and complete a demo order", async ({ page }) => {
   await page.goto("/");
 
   await page.getByTestId("add-protein-karaage").click();
   await page.getByTestId("add-veg-mixed-vegetables").click();
   await page.getByTestId("add-starch-rice").click();
+  await page.getByTestId("add-starch-yellow-curry").click();
 
   await page.getByRole("button", { name: "Review & pay" }).first().click();
   await expect(page.getByRole("heading", { name: "Almost lunch" })).toBeVisible();
+  await expect(page.getByText("$17.00").first()).toBeVisible();
 
   await page.getByLabel("Name").fill("Playwright Eater");
   await page.getByLabel("Email").fill("playwright@example.com");
@@ -66,16 +74,56 @@ test("mobile tray stays visible and opens the bento board", async ({ page }) => 
   await expect(dialog).toBeVisible();
 
   await dialog.getByRole("button", { name: /^Large/ }).click();
-  await expect(dialog.getByLabel("Large Bento, 0 of 10 portions filled")).toBeVisible();
+  await expect(dialog.getByLabel("Large Bento, 0 of 9 dishes and 0 of 2 sauces filled")).toBeVisible();
 
   await dialog.getByRole("button", { name: "Close bento board" }).click();
   await expect(dialog).toBeHidden();
-  await expect(page.getByTestId("tray-fill-count")).toHaveText("0/10");
+  await expect(page.getByTestId("tray-fill-count")).toHaveText("0/9");
 
   await addIngredient(page, "protein-karaage");
-  await expect(page.getByTestId("tray-fill-count")).toHaveText("1/10");
+  await expect(page.getByTestId("tray-fill-count")).toHaveText("1/9");
   await page.getByTestId("remove-protein-karaage").click();
-  await expect(page.getByTestId("tray-fill-count")).toHaveText("0/10");
+  await expect(page.getByTestId("tray-fill-count")).toHaveText("0/9");
+});
+
+test("dishes fill the box while up to two sauces stay separate", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  await addIngredient(page, "protein-karaage");
+  await clickTestId(page, "add-again-protein-karaage");
+  await clickTestId(page, "add-again-protein-karaage");
+  await addIngredient(page, "veg-mixed-vegetables");
+  await clickTestId(page, "add-again-veg-mixed-vegetables");
+  await clickTestId(page, "add-again-veg-mixed-vegetables");
+
+  await expect(page.getByTestId("tray-fill-count")).toHaveText("6/6");
+
+  await addIngredient(page, "starch-yellow-curry");
+  await addIngredient(page, "starch-green-curry");
+
+  await expect(page.getByTestId("tray-fill-count")).toHaveText("6/6");
+  await expect(page.getByTestId("tray-sauce-count")).toHaveText("Sauce 2/2");
+
+  await clickTestId(page, "add-again-starch-green-curry");
+  await expect(page.getByTestId("builder-notice")).toContainText("Choose up to 2 sauces.");
+});
+
+test("Pick For Me fills a large box and selects no sauces", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  await page.getByTestId("open-bento-board").click();
+  const dialog = page.getByRole("dialog", { name: "Build your box" });
+  await dialog.getByRole("button", { name: /^Large/ }).click();
+  await dialog.getByRole("button", { name: /Pick For Me/ }).click();
+
+  await expect(dialog.getByLabel("Large Bento, 9 of 9 dishes and 0 of 2 sauces filled")).toBeVisible();
+  await expect(dialog.getByTestId("bento-sauce-count")).toHaveText("0/2");
+
+  await dialog.getByRole("button", { name: "Close bento board" }).click();
+  await expect(page.getByTestId("tray-fill-count")).toHaveText("9/9");
+  await expect(page.getByTestId("tray-sauce-count")).toHaveCount(0);
 });
 
 test("dark mode follows the system, toggles, and survives a reload", async ({ page }) => {

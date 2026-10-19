@@ -1,10 +1,10 @@
 # Gemeshi Bento Lab
 
-A mobile-first DIY bento ordering app for pickup. Customers scan a QR code, choose a box, fill it with protein, vegetables and starch, pay with Square, and follow a live order status page. The same order is created in Square Orders so the kitchen can use Square Order Manager / KDS and the back office keeps one source of truth.
+A mobile-first DIY bento ordering app for pickup. Customers scan a QR code, choose a box, fill it with protein, vegetables, starch and optional sauces, pay with Square, and follow a live order status page. The same order is created in Square Orders so the kitchen can use Square Order Manager / KDS and the back office keeps one source of truth.
 
 ## What is included
 
-- **Customer builder** — two free box sizes (Regular 6 slots, Large 10 slots), per-ingredient quantities, capacity meter, dietary and allergen filters, Chef's pick, GST-inclusive pricing and a playful bento board.
+- **Customer builder** — two free box sizes (Regular 6 dishes, Large 9 dishes), per-ingredient quantities, a separate two-sauce tray, capacity meter, dietary and allergen filters, Pick For Me, GST-inclusive pricing and a playful bento board.
 - **Checkout** — same-day pickup slots with lead time and capacity, guest details, allergen acknowledgment, Square Web Payments SDK card tokenization and server-side quote revalidation.
 - **Order tracking** — private tokenized status page that polls for payment, cooking, ready and collected states. Ready notification is sent by email.
 - **Staff fallback** — OTP access for allowlisted emails, today's queue, Ready / Picked up actions, pause orders, and editable prep lead / slot gap / slot capacity / opening hours.
@@ -71,12 +71,12 @@ The app needs a Square application with Orders, Payments and Catalog access, plu
 npm run square:bootstrap
 ```
 
-This idempotently creates four categories (Bento Boxes, Proteins, Vegetables, Starches) and these item-level custom attributes:
+This idempotently creates five categories (Bento Boxes, Proteins, Vegetables, Starches, Sauces) and these item-level custom attributes:
 
 | Key | Type | Purpose |
 | --- | --- | --- |
 | `builder_order` | Number | Sort order inside a builder section. |
-| `portion_capacity` | Number | Box capacity. Regular = 6, Large = 10. |
+| `portion_capacity` | Number | Box capacity. Regular = 6, Large = 9. |
 | `dietary_tags` | Selection | Values should include `vegetarian`, `vegan`, `gluten-free`, `high-protein`. |
 | `allergens` | Selection | Values should include `fish`, `shellfish`, `egg`, `milk`, `soy`, `sesame`, `gluten`, `nuts`. |
 
@@ -87,11 +87,13 @@ SQUARE_CATEGORY_BOX_ID=...
 SQUARE_CATEGORY_PROTEIN_ID=...
 SQUARE_CATEGORY_VEGETABLE_ID=...
 SQUARE_CATEGORY_STARCH_ID=...
+SQUARE_CATEGORY_SAUCE_ID=...
 ```
 
 4. In Square Dashboard, create the menu items inside those categories. Recommendations:
-   - Box items: price `$0`, set `portion_capacity` to 6 or 10, and set `builder_order`.
+   - Box items: price `$0`, set `portion_capacity` to 6 or 9, and set `builder_order`.
    - Ingredients: set the GST-inclusive price, description, sold-out state, dietary tags and allergens.
+   - Sauces: place curry and sauce items in the Sauces category. They do not count against the box capacity, and customers may add up to two portions.
    - Keep item variations only where the customer should see a separate choice. Multiple variations become separate builder cards.
    - Use the Square sold-out toggle; the app reads `location_overrides[].sold_out`.
 5. Run the verification:

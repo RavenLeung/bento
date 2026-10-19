@@ -36,6 +36,7 @@ type CategoryConfig = {
   protein: string;
   vegetable: string;
   starch: string;
+  sauce: string;
 };
 
 export function mapSquareCatalog(
@@ -75,7 +76,8 @@ export function mapSquareCatalog(
     box: categories.box || findCategoryId(categoryNames, ["bento box", "bento boxes", "boxes"]),
     protein: categories.protein || findCategoryId(categoryNames, ["protein", "proteins"]),
     vegetable: categories.vegetable || findCategoryId(categoryNames, ["vegetable", "vegetables", "veg"]),
-    starch: categories.starch || findCategoryId(categoryNames, ["starch", "starches", "carbs"])
+    starch: categories.starch || findCategoryId(categoryNames, ["starch", "starches", "carbs"]),
+    sauce: categories.sauce || findCategoryId(categoryNames, ["sauce", "sauces", "curry", "curries"])
   };
 
   const items: CatalogItem[] = [];
@@ -148,7 +150,8 @@ export function mapSquareCatalog(
       box: 0,
       protein: 1,
       vegetable: 2,
-      starch: 3
+      starch: 3,
+      sauce: 4
     };
     const rank = sectionRank[a.section] - sectionRank[b.section];
     if (rank !== 0) return rank;
@@ -172,6 +175,7 @@ function sectionForCategory(
   if (categoryId === categories.protein) return "protein";
   if (categoryId === categories.vegetable) return "vegetable";
   if (categoryId === categories.starch) return "starch";
+  if (categoryId === categories.sauce) return "sauce";
   return null;
 }
 
@@ -206,7 +210,7 @@ function getSelectionAttribute(
 }
 
 function inferBoxCapacity(name: string): number {
-  return /large|big|family|10/i.test(name) ? 10 : 6;
+  return /large|big|family|9/i.test(name) ? 9 : 6;
 }
 
 function inferDisplayOrder(name: string): number {
@@ -232,6 +236,8 @@ export function inferVisual(name: string, section: BentoSection): { emoji: strin
   if (/rice/.test(value)) return { emoji: "🍚", color: "#f1ead9" };
   if (/noodle|soba/.test(value)) return { emoji: "🍜", color: "#b59b6b" };
   if (/potato/.test(value)) return { emoji: "🍠", color: "#dd8b5b" };
+  if (/curry/.test(value)) return { emoji: "🍛", color: "#d9a441" };
   if (section === "box") return { emoji: "🍱", color: "#f4c95d" };
+  if (section === "sauce") return { emoji: "🍛", color: "#d9a441" };
   return { emoji: section === "protein" ? "🍥" : "🥢", color: "#d9c9a5" };
 }

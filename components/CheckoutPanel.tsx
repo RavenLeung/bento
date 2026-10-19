@@ -3,7 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SquarePaymentForm, type PaymentContext } from "@/components/SquarePaymentForm";
 import { cn, formatMoney } from "@/lib/utils";
-import type { CatalogItem, PickupSlot, PublicConfig, Quote } from "@/lib/types";
+import type {
+  BentoSection,
+  CatalogItem,
+  PickupSlot,
+  PublicConfig,
+  Quote
+} from "@/lib/types";
 
 interface AvailabilityResponse {
   slots: PickupSlot[];
@@ -14,6 +20,7 @@ interface AvailabilityResponse {
 export interface SummaryLine {
   itemId: string;
   name: string;
+  section: Exclude<BentoSection, "box">;
   quantity: number;
   lineTotalCents: number;
 }
@@ -81,6 +88,8 @@ export function CheckoutPanel({
   const nameError = touched.name && !nameValid;
   const emailError = touched.email && !emailValid;
   const displayedLines = quote?.lines ?? summaryLines;
+  const dishLines = displayedLines.filter((line) => line.section !== "sauce");
+  const sauceLines = displayedLines.filter((line) => line.section === "sauce");
   let missingDetail: string | null = null;
   if (slotsLoading) missingDetail = "Checking today's pickup times…";
   else if (loadError && !availability) missingDetail = null;
@@ -334,16 +343,16 @@ export function CheckoutPanel({
               </p>
             </div>
             <div className="mt-3 divide-y divide-ink/6 rounded-xl bg-rice/70 px-3">
-              {displayedLines.map((line) => (
-                <div key={line.itemId} className="flex items-center gap-3 py-2">
-                  <span className="min-w-0 flex-1 truncate text-[11px] font-bold text-ink/65">{line.name}</span>
-                  <span className="text-[10px] font-black tabular-nums text-ink/40">×{line.quantity}</span>
-                  <span className="w-14 text-right text-[10px] font-bold tabular-nums text-ink/50">
-                    {formatMoney(line.lineTotalCents, config.currency)}
-                  </span>
-                </div>
-              ))}
+              <SummaryRows lines={dishLines} currency={config.currency} />
             </div>
+            {sauceLines.length > 0 ? (
+              <div className="mt-2 rounded-xl border border-yuzu/25 bg-yuzu/10 px-3">
+                <p className="pt-2 text-[9px] font-black uppercase tracking-[0.16em] text-ink/40">Sauces</p>
+                <div className="divide-y divide-ink/6">
+                  <SummaryRows lines={sauceLines} currency={config.currency} />
+                </div>
+              </div>
+            ) : null}
             <div className="mt-2 flex items-center justify-between px-1">
               <span className="text-[10px] font-semibold text-ink/35">GST included</span>
               <span className="text-xs font-black tabular-nums">
@@ -565,6 +574,33 @@ export function CheckoutPanel({
         </div>
       </div>
     </div>
+  );
+}
+
+function SummaryRows({
+  lines,
+  currency
+}: {
+  lines: Array<{
+    itemId: string;
+    name: string;
+    quantity: number;
+    lineTotalCents: number;
+  }>;
+  currency: string;
+}) {
+  return (
+    <>
+      {lines.map((line) => (
+        <div key={line.itemId} className="flex items-center gap-3 py-2">
+          <span className="min-w-0 flex-1 truncate text-[11px] font-bold text-ink/65">{line.name}</span>
+          <span className="text-[10px] font-black tabular-nums text-ink/40">×{line.quantity}</span>
+          <span className="w-14 text-right text-[10px] font-bold tabular-nums text-ink/50">
+            {formatMoney(line.lineTotalCents, currency)}
+          </span>
+        </div>
+      ))}
+    </>
   );
 }
 

@@ -34,7 +34,7 @@ vi.mock("@/lib/config", () => ({
     webhookSignatureKey: "test-webhook-key",
     apiVersion: "2026-09-16",
     baseUrl: "https://connect.squareupsandbox.com",
-    categories: { box: "", protein: "", vegetable: "", starch: "" }
+    categories: { box: "", protein: "", vegetable: "", starch: "", sauce: "" }
   },
   publicConfig: { appUrl: "https://shop.example.com" },
   staffEmails: new Set(["staff@example.com"]),

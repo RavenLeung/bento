@@ -6,7 +6,8 @@ const categories = {
   box: "cat-box",
   protein: "cat-protein",
   vegetable: "cat-vegetable",
-  starch: "cat-starch"
+  starch: "cat-starch",
+  sauce: "cat-sauce"
 };
 
 const objects: SquareCatalogObject[] = [
@@ -19,6 +20,11 @@ const objects: SquareCatalogObject[] = [
     id: "cat-protein",
     type: "CATEGORY",
     category_data: { name: "Proteins" }
+  },
+  {
+    id: "cat-sauce",
+    type: "CATEGORY",
+    category_data: { name: "Sauces" }
   },
   {
     id: "def-order",
@@ -117,6 +123,39 @@ const objects: SquareCatalogObject[] = [
     }
   },
   {
+    id: "item-large-box",
+    type: "ITEM",
+    item_data: {
+      name: "Large Bento",
+      category_id: "cat-box",
+      variations: [
+        {
+          id: "var-large-box",
+          item_variation_data: {
+            name: "Large",
+            price_money: { amount: 0, currency: "AUD" }
+          }
+        }
+      ]
+    }
+  },
+  {
+    id: "item-curry",
+    type: "ITEM",
+    item_data: {
+      name: "Yellow Curry",
+      category_id: "cat-sauce",
+      variations: [
+        {
+          id: "var-curry",
+          item_variation_data: {
+            price_money: { amount: 300, currency: "AUD" }
+          }
+        }
+      ]
+    }
+  },
+  {
     id: "item-absent",
     type: "ITEM",
     absent_at_location_ids: ["loc-1"],
@@ -154,6 +193,9 @@ describe("mapSquareCatalog", () => {
     const box = items.find((item) => item.id === "var-box");
     expect(box).toMatchObject({ section: "box", capacity: 6, priceCents: 0 });
 
+    const largeBox = items.find((item) => item.id === "var-large-box");
+    expect(largeBox).toMatchObject({ section: "box", capacity: 9 });
+
     const tofu = items.find((item) => item.id === "var-tofu-regular");
     expect(tofu).toMatchObject({
       name: "Crispy Tofu — Regular",
@@ -161,6 +203,9 @@ describe("mapSquareCatalog", () => {
       dietaryTags: ["vegetarian", "gluten-free"],
       allergens: ["soy"]
     });
+
+    const curry = items.find((item) => item.id === "var-curry");
+    expect(curry).toMatchObject({ section: "sauce", priceCents: 300 });
   });
 
   it("reads sold-out overrides and hides absent items", () => {
@@ -168,11 +213,14 @@ describe("mapSquareCatalog", () => {
     expect(items.some((item) => item.id === "var-absent")).toBe(false);
   });
 
-  it("ignores items outside the four bento categories", () => {
+  it("ignores items outside the five bento categories", () => {
     expect(items.some((item) => item.id === "var-other")).toBe(false);
   });
 
-  it("sorts boxes before ingredients", () => {
+  it("sorts boxes before ingredients and sauces after dishes", () => {
     expect(items[0]?.section).toBe("box");
+    expect(items.findIndex((item) => item.section === "sauce")).toBeGreaterThan(
+      items.findIndex((item) => item.section === "protein")
+    );
   });
 });

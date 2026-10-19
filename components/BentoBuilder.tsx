@@ -34,6 +34,7 @@ import {
   TOUCH_DRAG_TOLERANCE_PX,
   type MenuDragData
 } from "@/lib/bento-dnd";
+import { MAX_SAUCE_PORTIONS } from "@/lib/bento-rules";
 import { cn } from "@/lib/utils";
 import type {
   BentoSection,
@@ -72,6 +73,13 @@ const SECTION_META: Record<
     kicker: "The happy base",
     icon: "🍚",
     note: "Optional",
+    required: false
+  },
+  sauce: {
+    title: "Add a sauce",
+    kicker: "On the side",
+    icon: "🍛",
+    note: "Up to 2 · optional",
     required: false
   }
 };
@@ -200,15 +208,27 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
     [catalogById, quantities]
   );
 
-  const portions = useMemo<BoardPortion[]>(
+  const dishPortions = useMemo<BoardPortion[]>(
     () =>
-      selectedItems.flatMap(({ item, quantity }) =>
-        Array.from({ length: quantity }, (_, index) => ({ key: `${item.id}-${index}`, item }))
-      ),
+      selectedItems
+        .filter(({ item }) => item.section !== "sauce")
+        .flatMap(({ item, quantity }) =>
+          Array.from({ length: quantity }, (_, index) => ({ key: `${item.id}-${index}`, item }))
+        ),
+    [selectedItems]
+  );
+  const saucePortions = useMemo<BoardPortion[]>(
+    () =>
+      selectedItems
+        .filter(({ item }) => item.section === "sauce")
+        .flatMap(({ item, quantity }) =>
+          Array.from({ length: quantity }, (_, index) => ({ key: `${item.id}-${index}`, item }))
+        ),
     [selectedItems]
   );
 
-  const totalPortions = portions.length;
+  const totalPortions = dishPortions.length;
+  const sauceCount = saucePortions.length;
   const proteinCount = selectedItems
     .filter((entry) => entry.item.section === "protein")
     .reduce((total, entry) => total + entry.quantity, 0);
@@ -222,20 +242,35 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
     (total, entry) => total + entry.item.priceCents * entry.quantity,
     0
   );
-  const valid = Boolean(box) && proteinCount >= 1 && vegetableCount >= 1 && totalPortions <= capacity;
+  const valid =
+    Boolean(box) &&
+    proteinCount >= 1 &&
+    vegetableCount >= 1 &&
+    totalPortions <= capacity &&
+    sauceCount <= MAX_SAUCE_PORTIONS;
 
   const selections = useMemo(
-    () => selectedItems.map((entry) => ({ itemId: entry.item.id, quantity: entry.quantity })),
+    () =>
+      selectedItems
+        .filter((entry) => entry.item.section !== "box")
+        .map((entry) => ({ itemId: entry.item.id, quantity: entry.quantity })),
     [selectedItems]
   );
   const summaryLines = useMemo<SummaryLine[]>(
     () =>
-      selectedItems.map((entry) => ({
-        itemId: entry.item.id,
-        name: entry.item.name,
-        quantity: entry.quantity,
-        lineTotalCents: entry.item.priceCents * entry.quantity
-      })),
+      selectedItems.flatMap((entry) =>
+        entry.item.section === "box"
+          ? []
+          : [
+              {
+                itemId: entry.item.id,
+                name: entry.item.name,
+                section: entry.item.section,
+                quantity: entry.quantity,
+                lineTotalCents: entry.item.priceCents * entry.quantity
+              }
+            ]
+      ),
     [selectedItems]
   );
 
@@ -249,7 +284,8 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
     const result: Record<Exclude<BentoSection, "box">, CatalogItem[]> = {
       protein: [],
       vegetable: [],
-      starch: []
+      starch: [],
+      sauce: []
     };
     for (const item of catalog) {
       if (item.section === "box" || item.soldOut) continue;
@@ -272,6 +308,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
       !box ||
       !dragHintItem ||
       totalPortions > 0 ||
+      sauceCount > 0 ||
       checkoutOpen ||
       bentoSheetOpen ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -319,7 +356,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
       }
       document.removeEventListener("visibilitychange", handleVisibility);
     };
-  }, [bentoSheetOpen, box, checkoutOpen, dragHintItem, isDesktop, loading, totalPortions]);
+  }, [bentoSheetOpen, box, checkoutOpen, dragHintItem, isDesktop, loading, sauceCount, totalPortions]);
 
   function dismissDragHint() {
     setShowDragHint(false);
@@ -327,8 +364,12 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
 
   function addItem(item: CatalogItem, successNotice: string | null = null) {
     dismissDragHint();
-    if (item.soldOut) return;
-    if (totalPortions >= capacity) {
+    if (item.soldOut || item.section === "box") return;
+    if (item.section === "sauce" && sauceCount >= MAX_SAUCE_PORTIONS) {
+      setNotice(`Choose up to ${MAX_SAUCE_PORTIONS} sauces.`);
+      return;
+    }
+    if (item.section !== "sauce" && totalPortions >= capacity) {
       setNotice("That box is full. Remove a portion or switch to the Large box.");
       return;
     }
@@ -376,8 +417,10 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
     }
 
     const next: Record<string, number> = {};
+    let filled = 0;
 
-    function fillRandomly(items: CatalogItem[], count: number) {
+    function addRandomly(items: CatalogItem[], count: number) {
+      if (items.length === 0 || count <= 0) return;
       const shuffled = [...items];
       for (let index = shuffled.length - 1; index > 0; index -= 1) {
         const swapIndex = Math.floor(Math.random() * (index + 1));
@@ -386,12 +429,27 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
       for (let index = 0; index < count; index += 1) {
         const item = shuffled[index % shuffled.length];
         next[item.id] = (next[item.id] ?? 0) + 1;
+        filled += 1;
       }
     }
 
-    fillRandomly(pool.protein, 2);
-    fillRandomly(pool.vegetable, 3);
-    if (pool.starch.length > 0) fillRandomly(pool.starch, 1);
+    const targetProtein = box.capacity >= 9 ? 3 : 2;
+    const targetStarch = box.capacity >= 9 ? 2 : 1;
+    const targetVegetable = Math.max(1, box.capacity - targetProtein - targetStarch);
+
+    addRandomly(pool.protein, targetProtein);
+    addRandomly(pool.vegetable, targetVegetable);
+    addRandomly(pool.starch, targetStarch);
+
+    const fallbackPools = [pool.protein, pool.vegetable, pool.starch].filter(
+      (items) => items.length > 0
+    );
+    let fallbackIndex = 0;
+    while (filled < box.capacity && fallbackPools.length > 0) {
+      addRandomly(fallbackPools[fallbackIndex % fallbackPools.length], 1);
+      fallbackIndex += 1;
+    }
+
     setQuantities(next);
     setNotice("Picked a random mix for you. Swap anything you like.");
   }
@@ -447,7 +505,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
       onDragCancel={() => setActiveDragItem(null)}
     >
       <div className="relative min-h-dvh overflow-x-clip">
-      <div className="pointer-events-none absolute -right-24 top-16 text-[12rem] opacity-[0.045] sm:text-[18rem]" aria-hidden="true">
+      <div className="pointer-events-none absolute -right-20 top-8 rotate-[-8deg] text-[12rem] opacity-[0.14] sm:-right-24 sm:top-12 sm:text-[18rem]" aria-hidden="true">
         🍱
       </div>
 
@@ -606,7 +664,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
               ) : null}
 
               <div className="mt-6 space-y-8 sm:space-y-9">
-                {(["protein", "vegetable", "starch"] as const).map((section) => {
+                {(["protein", "vegetable", "starch", "sauce"] as const).map((section) => {
                   const meta = SECTION_META[section];
                   const items = filteredBySection[section];
                   return (
@@ -679,7 +737,8 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
                 activeBoxId={box.id}
                 onSelectBox={selectBox}
                 box={box}
-                portions={portions}
+                portions={dishPortions}
+                saucePortions={saucePortions}
                 totalCents={totalCents}
                 proteinCount={proteinCount}
                 vegetableCount={vegetableCount}
@@ -723,7 +782,8 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
       {!loading && box && !loadError && !checkoutOpen && !bentoSheetOpen ? (
         <BentoSummaryTray
           box={box}
-          portions={portions}
+          portions={dishPortions}
+          saucePortions={saucePortions}
           capacity={capacity}
           totalCents={totalCents}
           valid={valid}
@@ -750,7 +810,8 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
           activeBoxId={box.id}
           onSelectBox={selectBox}
           box={box}
-          portions={portions}
+          portions={dishPortions}
+          saucePortions={saucePortions}
           totalCents={totalCents}
           proteinCount={proteinCount}
           vegetableCount={vegetableCount}

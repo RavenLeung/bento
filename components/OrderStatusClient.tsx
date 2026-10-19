@@ -216,7 +216,18 @@ export function OrderStatusClient({
           <div className="mt-3 divide-y divide-ink/6">
             {order.lines.map((line) => (
               <div key={line.id} className="flex items-center gap-3 py-2.5">
-                <span className={cn("h-2 w-2 shrink-0 rounded-full", line.section === "protein" ? "bg-salmon" : line.section === "vegetable" ? "bg-leaf" : "bg-yuzu")} />
+                <span
+                  className={cn(
+                    "h-2 w-2 shrink-0 rounded-full",
+                    line.section === "protein"
+                      ? "bg-salmon"
+                      : line.section === "vegetable"
+                        ? "bg-leaf"
+                        : line.section === "sauce"
+                          ? "bg-[#9b6a45]"
+                          : "bg-yuzu"
+                  )}
+                />
                 <span className="min-w-0 flex-1 truncate text-sm font-bold text-ink/70">{line.name}</span>
                 <span className="text-xs font-black tabular-nums text-ink/45">×{line.quantity}</span>
                 <span className="w-16 text-right text-xs font-bold tabular-nums text-ink/55">{formatMoney(line.lineTotalCents, order.currency)}</span>

@@ -2,6 +2,7 @@
 
 import { useDroppable } from "@dnd-kit/core";
 import { ItemImage } from "@/components/bento/ItemImage";
+import { MAX_SAUCE_PORTIONS } from "@/lib/bento-rules";
 import { cn, formatMoney } from "@/lib/utils";
 import type { CatalogItem } from "@/lib/types";
 
@@ -16,6 +17,7 @@ interface BentoBoardProps {
   onSelectBox: (id: string) => void;
   box: CatalogItem | null;
   portions: BoardPortion[];
+  saucePortions: BoardPortion[];
   totalCents: number;
   proteinCount: number;
   vegetableCount: number;
@@ -35,6 +37,7 @@ export function BentoBoard({
   onSelectBox,
   box,
   portions,
+  saucePortions,
   totalCents,
   proteinCount,
   vegetableCount,
@@ -48,6 +51,7 @@ export function BentoBoard({
   dragActive = false
 }: BentoBoardProps) {
   const capacity = box?.capacity ?? 6;
+  const sauceCount = saucePortions.length;
   const fillPercent = capacity ? Math.min(100, (totalPortions / capacity) * 100) : 0;
   const missingProtein = proteinCount < 1;
   const missingVegetable = vegetableCount < 1;
@@ -72,7 +76,7 @@ export function BentoBoard({
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-leaf">Your bento</p>
           <h2 className="mt-1 font-display text-2xl font-black tracking-tight">Pack it full</h2>
         </div>
-        {totalPortions > 0 ? (
+        {totalPortions > 0 || sauceCount > 0 ? (
           <button
             type="button"
             onClick={onClear}
@@ -116,7 +120,7 @@ export function BentoBoard({
             >
               <span className="block text-sm font-extrabold">{option.name.replace(" Bento", "")}</span>
               <span className={cn("block text-[11px]", active ? "text-white/65" : "text-ink/50")}>
-                {option.capacity} portions · free
+                {option.capacity} dishes · free
               </span>
             </button>
           );
@@ -132,8 +136,15 @@ export function BentoBoard({
           </span>
         </div>
         <div
-          className="grid grid-cols-2 gap-1.5 rounded-[1.2rem] bg-[#e8dcc7] p-1.5 dark:bg-[#3a3a31] sm:gap-2"
-          aria-label={box ? `${box.name}, ${totalPortions} of ${capacity} portions filled` : "Bento box"}
+          className={cn(
+            "grid gap-1.5 rounded-[1.2rem] bg-[#e8dcc7] p-1.5 dark:bg-[#3a3a31] sm:gap-2",
+            capacity >= 9 ? "grid-cols-3" : "grid-cols-2"
+          )}
+          aria-label={
+            box
+              ? `${box.name}, ${totalPortions} of ${capacity} dishes and ${sauceCount} of ${MAX_SAUCE_PORTIONS} sauces filled`
+              : "Bento box"
+          }
         >
           {Array.from({ length: capacity }).map((_, index) => {
             const portion = portions[index];
@@ -160,13 +171,60 @@ export function BentoBoard({
               >
                 <ItemImage
                   item={portion.item}
-                  sizes="(max-width: 640px) 45vw, 180px"
+                  sizes={capacity >= 9 ? "(max-width: 640px) 30vw, 120px" : "(max-width: 640px) 45vw, 180px"}
                   className="transition duration-300 group-hover:scale-105"
                   emojiClassName="text-2xl drop-shadow-sm transition group-hover:scale-90 sm:text-3xl"
                 />
                 <span className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-nori/90 via-nori/55 to-transparent px-1 pb-1 pt-5 text-center text-[8px] font-black uppercase tracking-wide text-white">
                   {portion.item.name}
                 </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="mt-2 rounded-[1.2rem] border border-ink/8 bg-paper/70 p-2">
+        <div className="flex items-center justify-between px-1">
+          <span className="text-[9px] font-black uppercase tracking-[0.18em] text-ink/45">Sauces</span>
+          <span
+            data-testid="bento-sauce-count"
+            className="rounded-full bg-ink/5 px-1.5 py-0.5 text-[9px] font-black tabular-nums text-ink/50"
+          >
+            {sauceCount}/{MAX_SAUCE_PORTIONS}
+          </span>
+        </div>
+        <div className="mt-1.5 grid grid-cols-2 gap-1.5">
+          {Array.from({ length: MAX_SAUCE_PORTIONS }).map((_, index) => {
+            const portion = saucePortions[index];
+            if (!portion) {
+              return (
+                <div
+                  key={`empty-sauce-${index}`}
+                  className="flex min-h-10 items-center justify-center rounded-xl border border-dashed border-ink/10 bg-white/25 px-2 text-center text-[8px] font-bold uppercase tracking-wide text-ink/25 dark:bg-white/[0.06]"
+                  aria-hidden="true"
+                >
+                  Optional sauce
+                </div>
+              );
+            }
+            return (
+              <button
+                key={portion.key}
+                type="button"
+                onClick={() => onRemove(portion.item)}
+                title={`Remove one ${portion.item.name}`}
+                aria-label={`Remove one ${portion.item.name}`}
+                className="group relative flex min-h-10 animate-pop items-center gap-2 overflow-hidden rounded-xl border border-black/5 px-2 py-1 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0"
+                style={{ backgroundColor: `${portion.item.color}55` }}
+              >
+                <span className="relative grid h-7 w-7 shrink-0 place-items-center overflow-hidden rounded-lg bg-white/65">
+                  <ItemImage item={portion.item} sizes="28px" emojiClassName="text-base" />
+                </span>
+                <span className="min-w-0 flex-1 truncate text-[8px] font-black uppercase tracking-wide text-ink/70">
+                  {portion.item.name}
+                </span>
+                <span className="shrink-0 text-xs font-black text-ink/35 group-hover:text-chili" aria-hidden="true">×</span>
               </button>
             );
           })}

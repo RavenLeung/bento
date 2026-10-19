@@ -1,4 +1,4 @@
-export type BentoSection = "box" | "protein" | "vegetable" | "starch";
+export type BentoSection = "box" | "protein" | "vegetable" | "starch" | "sauce";
 
 export type OrderStatus =
   | "PENDING_PAYMENT"
@@ -138,6 +138,7 @@ export type ApiErrorCode =
   | "BAD_REQUEST"
   | "OUT_OF_STOCK"
   | "CAPACITY_EXCEEDED"
+  | "SAUCE_LIMIT_EXCEEDED"
   | "SLOT_UNAVAILABLE"
   | "PRICE_CHANGED"
   | "PAYMENT_DECLINED"
