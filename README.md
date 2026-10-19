@@ -2,9 +2,11 @@
 
 A mobile-first DIY bento ordering app for pickup. Customers scan a QR code, choose a box, fill it with protein, vegetables, starch and optional sauces, pay with Square, and follow a live order status page. The same order is created in Square Orders so the kitchen can use Square Order Manager / KDS and the back office keeps one source of truth.
 
+> This is an MVP reference implementation. Review the payment, authentication, privacy and deployment configuration before using it with real customers.
+
 ## Development
 
-See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for the architecture, local setup, environment variables, business rules, testing, Vercel staging/production deployment and troubleshooting guide.
+See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for the architecture, local setup, environment variables, business rules, testing, deployment and troubleshooting guide.
 
 ## What is included
 
@@ -14,7 +16,7 @@ See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for the architecture, local setup
 - **Staff fallback** — OTP access for allowlisted emails, today's queue, Ready / Picked up actions, pause orders, and editable prep lead / slot gap / slot capacity / opening hours.
 - **Square integration** — Catalog is the source of truth for menu items, prices, descriptions, sold-out state, dietary tags and allergens; paid orders create Square orders; Ready and Picked up update Square fulfillment state.
 - **Reliability** — signed quotes, signed staff sessions, database slot locking, idempotent checkout, webhook event deduplication, an outbox for email/catalog jobs, and a cron recovery endpoint.
-- **Demo mode** — works without Square, Neon or Resend. Orders live in process memory and staff access is bypassed for local demos.
+- **Demo mode** — works without Square, PostgreSQL or Resend. Orders live in process memory and staff access is bypassed for local demos.
 
 ## Stack
 
@@ -22,11 +24,11 @@ See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for the architecture, local setup
 | --- | --- | --- |
 | App | Next.js 16 App Router, React 19, TypeScript | One deployable app for the customer UI, APIs, staff screen and webhooks. |
 | Styling | Tailwind CSS 3 | Fast, mobile-first visual iteration without a heavy component framework. |
-| Database | Neon PostgreSQL (Sydney) via `postgres.js` | Serverless-friendly Postgres, row transactions and advisory locks for slot capacity. |
+| Database | PostgreSQL (Neon or compatible) via `postgres.js` | Serverless-friendly Postgres, row transactions and advisory locks for slot capacity. |
 | ORM/types | Drizzle schema | Typed table definitions; SQL migrations are applied by the included runner. |
 | Payments / POS | Square Web Payments SDK + Orders API | Card tokenization in the browser, server-side payment, Orders in Square, KDS-compatible fulfillments. |
 | Email | Resend | Transactional confirmation and ready-to-collect messages. |
-| Hosting | Vercel + Vercel Cron | Simple Next.js deployment; cron drains the outbox and retries webhook work. |
+| Hosting | Vercel + Vercel Cron (or another Node.js host) | Simple Next.js deployment; cron drains the outbox and retries webhook work. |
 | Tests | Vitest + Playwright | 54 unit tests plus 15 end-to-end customer, drag-drop and staff scenarios. |
 
 ## Local demo
@@ -100,6 +102,8 @@ SQUARE_CATEGORY_SAUCE_ID=...
    - Sauces: place curry and sauce items in the Sauces category. They do not count against the box capacity, and customers may add up to two portions.
    - Keep item variations only where the customer should see a separate choice. Multiple variations become separate builder cards.
    - Use the Square sold-out toggle; the app reads `location_overrides[].sold_out`.
+
+Catalog images are rendered with `next/image`. Set `MENU_IMAGE_HOSTS` to a comma-separated list of HTTPS hostnames that serve your images (wildcards such as `**.example.com` are supported). Leave it blank to use the demo host plus Square CDN defaults.
 5. Run the verification:
 
 ```bash
@@ -133,7 +137,7 @@ Showcase mode uses the committed demo catalog and keeps the full builder, filter
 
 ## Full production deployment
 
-1. Create a Neon PostgreSQL database in the Sydney region.
+1. Create a PostgreSQL database (Neon or a compatible provider) in a region close to the store.
 2. Set `DATABASE_URL` (include `?sslmode=require`) and run:
 
 ```bash
@@ -166,7 +170,7 @@ The runner records applied files in `schema_migrations`, so it is safe to run on
 - Single store, same-day pickup, English and AUD only.
 - No customer accounts, SMS, delivery, loyalty, multi-store UI or customer-initiated refunds.
 - Abandoned card payments are marked failed by the cleanup job; there is no custom refund workflow.
-- With `DATABASE_URL` blank, demo orders are in memory and are not shared across serverless instances. Staging uses Neon and persists demo orders.
+- With `DATABASE_URL` blank, demo orders are in memory and are not shared across serverless instances. A preview deployment can use PostgreSQL to persist demo orders.
 - Demo mode is only auto-enabled outside production. `DEMO_MODE=true` bypasses staff authentication, so production startup validation rejects it.
 
 ## Project map
@@ -183,3 +187,15 @@ scripts/                Migration, Square bootstrap and verification commands
 tests/                  Vitest domain and demo checkout tests
 e2e/                    Playwright demo order flow
 ```
+
+## Demo content and trademarks
+
+The `Gemeshi Bento Lab` name, sample store details, menu copy, `demo-data/` CSV and externally hosted demo images are included so the demo is usable out of the box. They are example content and are not licensed under the MIT License. The license does not grant trademark, brand or third-party image rights. Replace them with assets you own before a public production deployment.
+
+## Contributing
+
+Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Report vulnerabilities privately according to [SECURITY.md](SECURITY.md), and follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## License
+
+Released under the [MIT License](LICENSE).
