@@ -134,10 +134,7 @@ export function BentoBoard({
           </span>
         </div>
         <div
-          className={cn(
-            "grid gap-1.5 rounded-[1.2rem] bg-[#e8dcc7] p-1.5 dark:bg-[#3a3a31] sm:gap-2",
-            capacity >= 9 ? "grid-cols-3" : "grid-cols-2"
-          )}
+          className="grid grid-cols-3 gap-1.5 rounded-[1.2rem] bg-[#e8dcc7] p-1.5 dark:bg-[#3a3a31] sm:gap-2"
           aria-label={
             box
               ? `${box.name}, ${totalPortions} of ${capacity} dishes and ${sauceCount} of ${MAX_SAUCE_PORTIONS} sauces filled`
@@ -169,7 +166,7 @@ export function BentoBoard({
               >
                 <ItemImage
                   item={portion.item}
-                  sizes={capacity >= 9 ? "(max-width: 640px) 30vw, 120px" : "(max-width: 640px) 45vw, 180px"}
+                  sizes="(max-width: 640px) 30vw, 120px"
                   className="transition duration-300 group-hover:scale-105"
                   emojiClassName="text-2xl drop-shadow-sm transition group-hover:scale-90 sm:text-3xl"
                 />
