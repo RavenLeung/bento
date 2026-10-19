@@ -3,9 +3,11 @@
 import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import { useRouter } from "next/navigation";
 import { BentoBoard, type BoardPortion } from "@/components/bento/BentoBoard";
+import { BentoSheet } from "@/components/bento/BentoSheet";
+import { BentoSummaryTray } from "@/components/bento/BentoSummaryTray";
 import { IngredientCard } from "@/components/bento/IngredientCard";
 import { CheckoutPanel, type SummaryLine } from "@/components/CheckoutPanel";
-import { cn, formatMoney } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import type {
   BentoSection,
   CatalogItem,
@@ -78,6 +80,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
   const [allergenFilters, setAllergenFilters] = useState<Set<string>>(() => new Set());
   const [notice, setNotice] = useState<string | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [bentoSheetOpen, setBentoSheetOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -282,6 +285,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
       setNotice("Add at least one protein and one vegetable before checking out.");
       return;
     }
+    setBentoSheetOpen(false);
     setCheckoutOpen(true);
   }
 
@@ -297,13 +301,13 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
             🍱
           </span>
           <span>
-            <span className="block font-display text-lg font-black leading-none tracking-tight">Bento Lab</span>
-            <span className="block text-[9px] font-black uppercase tracking-[0.19em] text-leaf">Build your lunch</span>
+            <span className="block whitespace-nowrap font-display text-lg font-black leading-none tracking-tight">Bento Lab</span>
+            <span className="block whitespace-nowrap text-[9px] font-black uppercase tracking-[0.16em] text-leaf">Build your lunch</span>
           </span>
         </a>
         <div className="flex items-center gap-2">
           {snapshot?.source === "demo" ? (
-            <span className="rounded-full bg-yuzu/25 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-ink/55 ring-1 ring-yuzu/40">
+            <span className="whitespace-nowrap rounded-full bg-yuzu/25 px-2 py-1 text-[8px] font-black uppercase tracking-wider text-ink/55 ring-1 ring-yuzu/40 sm:text-[9px]">
               Demo menu
             </span>
           ) : null}
@@ -548,37 +552,42 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
         </footer>
       </main>
 
-      {!loading && box && !loadError ? (
-        <div className="safe-bottom fixed inset-x-0 bottom-0 z-30 border-t border-ink/10 bg-paper/95 px-4 pt-3 shadow-[0_-12px_35px_rgba(28,36,31,.12)] backdrop-blur lg:hidden">
-          <div className="mx-auto flex max-w-xl items-center gap-3">
-            <div className="min-w-0 flex-1">
-              <div className="flex items-baseline gap-2">
-                <span className="font-display text-xl font-black">{formatMoney(totalCents, config.currency)}</span>
-                <span className="text-[10px] font-bold text-ink/40">{totalPortions}/{capacity} slots</span>
-              </div>
-              <p className="truncate text-[9px] font-bold text-ink/40">
-                {proteinCount < 1 && vegetableCount < 1
-                  ? "Add a protein + vegetable"
-                  : proteinCount < 1
-                    ? "Add a protein"
-                    : vegetableCount < 1
-                      ? "Add a vegetable"
-                      : "Box looking good"}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={openCheckout}
-              disabled={!valid}
-              className={cn(
-                "shrink-0 rounded-xl px-5 py-3 text-sm font-black transition",
-                valid ? "bg-moss text-white shadow-md active:scale-[0.98]" : "cursor-not-allowed bg-ink/10 text-ink/35"
-              )}
-            >
-              Review & pay
-            </button>
-          </div>
-        </div>
+      {!loading && box && !loadError && !checkoutOpen && !bentoSheetOpen ? (
+        <BentoSummaryTray
+          box={box}
+          portions={portions}
+          capacity={capacity}
+          totalCents={totalCents}
+          valid={valid}
+          proteinCount={proteinCount}
+          vegetableCount={vegetableCount}
+          currency={config.currency}
+          onOpen={() => setBentoSheetOpen(true)}
+          onCheckout={openCheckout}
+        />
+      ) : null}
+
+      {box ? (
+        <BentoSheet
+          open={bentoSheetOpen}
+          onClose={() => setBentoSheetOpen(false)}
+          onCheckout={openCheckout}
+          boxes={boxes}
+          activeBoxId={box.id}
+          onSelectBox={selectBox}
+          box={box}
+          portions={portions}
+          totalCents={totalCents}
+          proteinCount={proteinCount}
+          vegetableCount={vegetableCount}
+          starchCount={starchCount}
+          totalPortions={totalPortions}
+          valid={valid}
+          currency={config.currency}
+          onRemove={removeItem}
+          onClear={clearBox}
+          onChefPick={chefPick}
+        />
       ) : null}
 
       {box ? (
