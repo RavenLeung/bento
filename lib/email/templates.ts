@@ -8,7 +8,7 @@ function shell(title: string, content: string): string {
 <html>
   <body style="margin:0;background:#f7f2e8;color:#1c241f;font-family:Avenir Next,Avenir,system-ui,sans-serif">
     <div style="max-width:560px;margin:0 auto;padding:28px 18px 48px">
-      <div style="font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#3f7a5d;font-weight:700">Bento Lab</div>
+      <div style="font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#3f7a5d;font-weight:700">Gemeshi Bento Lab</div>
       <div style="background:#fffdf8;border:1px solid #e6ddcc;border-radius:24px;padding:28px;margin-top:16px;box-shadow:0 14px 40px rgba(28,36,31,.08)">
         <h1 style="font-size:28px;line-height:1.15;margin:0 0 16px">${title}</h1>
         ${content}
@@ -68,7 +68,7 @@ export function readyEmail(order: OrderRecord): { subject: string; html: string 
 
 export function staffOtpEmail(code: string): { subject: string; html: string } {
   return {
-    subject: `Your Bento Lab staff code: ${code}`,
+    subject: `Your Gemeshi Bento Lab staff code: ${code}`,
     html: shell(
       "Staff sign-in code",
       `<p style="font-size:15px;line-height:1.6;margin:0 0 18px">Use this one-time code to open the staff order list. It expires in 10 minutes.</p>

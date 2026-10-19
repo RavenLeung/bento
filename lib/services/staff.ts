@@ -71,7 +71,7 @@ async function syncSquareState(
     console.error("Square fulfillment sync failed", order.orderCode, target, error);
     return {
       synced: false,
-      warning: `Saved in Bento Lab, but Square could not be updated to ${target.toLowerCase()}. Check the Square order manually.`
+      warning: `Saved in Gemeshi Bento Lab, but Square could not be updated to ${target.toLowerCase()}. Check the Square order manually.`
     };
   }
 }

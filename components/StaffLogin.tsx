@@ -57,7 +57,7 @@ export function StaffLogin({ storeName }: { storeName: string }) {
   return (
     <main className="flex min-h-dvh items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm">
-        <a href="/" className="mx-auto flex w-fit items-center gap-2.5" aria-label="Back to Bento Lab">
+        <a href="/" className="mx-auto flex w-fit items-center gap-2.5" aria-label="Back to Gemeshi Bento Lab">
           <span className="grid h-11 w-11 place-items-center rounded-2xl bg-yuzu text-2xl shadow-sm ring-1 ring-ink/10">🍱</span>
           <span>
             <span className="block font-display text-xl font-black leading-none tracking-tight">{storeName}</span>

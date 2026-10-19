@@ -1,4 +1,4 @@
-# Bento Lab
+# Gemeshi Bento Lab
 
 A mobile-first DIY bento ordering app for pickup. Customers scan a QR code, choose a box, fill it with protein, vegetables and starch, pay with Square, and follow a live order status page. The same order is created in Square Orders so the kitchen can use Square Order Manager / KDS and the back office keeps one source of truth.
 

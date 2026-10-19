@@ -111,10 +111,10 @@ export function OrderStatusClient({
   return (
     <div className="relative min-h-dvh overflow-x-clip pb-12">
       <header className="mx-auto flex max-w-3xl items-center justify-between px-4 py-5 sm:px-6">
-        <a href="/" className="flex items-center gap-2.5" aria-label="Bento Lab home">
+        <a href="/" className="flex items-center gap-2.5" aria-label="Gemeshi Bento Lab home">
           <span className="grid h-10 w-10 place-items-center rounded-2xl bg-yuzu text-xl shadow-sm ring-1 ring-ink/10">🍱</span>
           <span>
-            <span className="block font-display text-lg font-black leading-none tracking-tight">Bento Lab</span>
+            <span className="block font-display text-[15px] font-black leading-none tracking-tight sm:text-lg">Gemeshi Bento Lab</span>
             <span className="block text-[9px] font-black uppercase tracking-[0.19em] text-leaf">Order tracker</span>
           </span>
         </a>

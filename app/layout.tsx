@@ -4,11 +4,11 @@ import "@/app/globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Bento Lab · Build your bento",
-    template: "%s · Bento Lab"
+    default: "Gemeshi Bento Lab · Build your bento",
+    template: "%s · Gemeshi Bento Lab"
   },
   description: "Pick your protein, pile on vegetables and choose a starch. Build a bento that is yours.",
-  applicationName: "Bento Lab",
+  applicationName: "Gemeshi Bento Lab",
   formatDetection: { telephone: false }
 };
 

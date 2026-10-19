@@ -10,12 +10,17 @@ interface IngredientCardProps {
   onRemove: (item: CatalogItem) => void;
 }
 
+const DIETARY_BADGE_STYLES: Record<string, string> = {
+  vegetarian: "bg-leaf/10 text-moss ring-leaf/20",
+  vegan: "bg-moss/10 text-moss ring-moss/20",
+  "gluten-free": "bg-yuzu/20 text-ink/65 ring-yuzu/40",
+  "high-protein": "bg-salmon/15 text-chili ring-salmon/25"
+};
+
 export function IngredientCard({ item, quantity, onAdd, onRemove }: IngredientCardProps) {
   const selected = quantity > 0;
-  const dietary = item.dietaryTags.slice(0, 2).map((tag) => tag.replace("-", " "));
   const allergenCopy =
     item.allergens.length > 0 ? `Contains ${item.allergens.join(", ")}` : "No listed allergens";
-  const caption = [...dietary, allergenCopy].join(" · ");
 
   return (
     <article
@@ -51,8 +56,24 @@ export function IngredientCard({ item, quantity, onAdd, onRemove }: IngredientCa
           </p>
         </div>
 
-        <p className="mt-1.5 truncate text-[9px] font-semibold leading-4 text-ink/38" title={caption}>
-          {caption}
+        {item.dietaryTags.length > 0 ? (
+          <div className="mt-1.5 flex flex-wrap gap-1">
+            {item.dietaryTags.map((tag) => (
+              <span
+                key={tag}
+                className={cn(
+                  "rounded-full px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wide ring-1",
+                  DIETARY_BADGE_STYLES[tag] ?? "bg-ink/5 text-ink/50 ring-ink/10"
+                )}
+              >
+                {tag.replace("-", " ")}
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        <p className="mt-1.5 truncate text-[9px] font-semibold leading-4 text-ink/38" title={allergenCopy}>
+          {allergenCopy}
         </p>
 
         <div className="mt-auto flex items-center justify-end gap-2 pt-2">

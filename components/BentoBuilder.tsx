@@ -239,28 +239,29 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
       starch: filteredBySection.starch
     };
     if (pool.protein.length === 0 || pool.vegetable.length === 0) {
-      setNotice("Chef cannot meet those filters. Try removing one of them.");
+      setNotice("Pick For Me cannot meet those filters. Try removing one of them.");
       return;
     }
 
-    const proteinTarget = Math.max(1, Math.round(capacity * 0.33));
-    const vegTarget = Math.max(1, Math.round(capacity * 0.5));
-    const starchTarget = Math.max(0, capacity - proteinTarget - vegTarget);
     const next: Record<string, number> = {};
 
-    function fill(section: keyof typeof pool, target: number) {
-      const items = pool[section];
-      for (let index = 0; index < target; index += 1) {
-        const item = items[index % items.length];
+    function fillRandomly(items: CatalogItem[], count: number) {
+      const shuffled = [...items];
+      for (let index = shuffled.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+      }
+      for (let index = 0; index < count; index += 1) {
+        const item = shuffled[index % shuffled.length];
         next[item.id] = (next[item.id] ?? 0) + 1;
       }
     }
 
-    fill("protein", proteinTarget);
-    fill("vegetable", vegTarget);
-    fill("starch", starchTarget);
+    fillRandomly(pool.protein, 2);
+    fillRandomly(pool.vegetable, 3);
+    if (pool.starch.length > 0) fillRandomly(pool.starch, 1);
     setQuantities(next);
-    setNotice("Chef packed a balanced box. Swap anything you like.");
+    setNotice("Picked a random mix for you. Swap anything you like.");
   }
 
   function toggleFilter(
@@ -296,12 +297,12 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
       </div>
 
       <header className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-4 pt-5 sm:px-6">
-        <a href="/" className="group flex items-center gap-2.5" aria-label="Bento Lab home">
+        <a href="/" className="group flex items-center gap-2.5" aria-label="Gemeshi Bento Lab home">
           <span className="grid h-10 w-10 place-items-center rounded-2xl bg-yuzu text-xl shadow-sm ring-1 ring-ink/10 transition group-hover:-rotate-3">
             🍱
           </span>
           <span>
-            <span className="block whitespace-nowrap font-display text-lg font-black leading-none tracking-tight">Bento Lab</span>
+            <span className="block whitespace-nowrap font-display text-[15px] font-black leading-none tracking-tight sm:text-lg">Gemeshi Bento Lab</span>
             <span className="block whitespace-nowrap text-[9px] font-black uppercase tracking-[0.16em] text-leaf">Build your lunch</span>
           </span>
         </a>

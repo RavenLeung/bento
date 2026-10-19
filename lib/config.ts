@@ -6,7 +6,7 @@ const envSchema = z.object({
     (value) => (typeof value === "string" && value.trim() === "" ? undefined : value),
     z.string().url().optional()
   ),
-  STORE_NAME: z.string().default("Bento Lab"),
+  STORE_NAME: z.string().default("Gemeshi Bento Lab"),
   STORE_ADDRESS: z.string().default("Sydney, Australia"),
   STORE_TIMEZONE: z.string().default("Australia/Sydney"),
   STORE_CURRENCY: z.string().default("AUD"),
@@ -25,7 +25,7 @@ const envSchema = z.object({
   SQUARE_CATEGORY_VEGETABLE_ID: z.string().optional(),
   SQUARE_CATEGORY_STARCH_ID: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
-  EMAIL_FROM: z.string().default("Bento Lab <orders@example.com>"),
+  EMAIL_FROM: z.string().default("Gemeshi Bento Lab <orders@example.com>"),
   CRON_SECRET: z.string().optional()
 });
 

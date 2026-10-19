@@ -92,7 +92,7 @@ export function BentoBoard({
       <div className="relative mt-4 overflow-hidden rounded-[1.7rem] border-[7px] border-nori bg-[#2c2c25] p-2 shadow-inner">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-7 bg-gradient-to-b from-white/10 to-transparent" />
         <div className="mb-1 flex items-center justify-between px-1">
-          <span className="text-[9px] font-black uppercase tracking-[0.24em] text-yuzu/75">Bento Lab</span>
+          <span className="text-[9px] font-black uppercase tracking-[0.24em] text-yuzu/75">Gemeshi Bento Lab</span>
           <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">
             {totalPortions}/{capacity}
           </span>
@@ -192,7 +192,7 @@ export function BentoBoard({
           onClick={onChefPick}
           className="rounded-full border border-ink/10 bg-white px-3.5 py-2 text-xs font-extrabold shadow-sm transition hover:-translate-y-0.5 hover:border-leaf/40 hover:shadow-md"
         >
-          ✨ Chef&apos;s pick
+          ✨ Pick For Me
         </button>
       </div>
     </section>
