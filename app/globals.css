@@ -3,7 +3,40 @@
 @tailwind utilities;
 
 :root {
-  --grain: radial-gradient(circle at 1px 1px, rgba(28, 36, 31, 0.055) 1px, transparent 0);
+  color-scheme: light;
+  --color-ink: 28 36 31;
+  --color-moss: 36 79 61;
+  --color-leaf: 63 122 93;
+  --color-rice: 247 242 232;
+  --color-paper: 255 253 248;
+  --color-salmon: 242 139 114;
+  --color-yuzu: 244 201 93;
+  --color-nori: 23 37 30;
+  --color-chili: 201 85 61;
+  --shadow-soft: 0 16px 40px rgba(28, 36, 31, 0.1);
+  --shadow-lift: 0 24px 80px rgba(28, 36, 31, 0.18);
+  --grain-dot: rgba(28, 36, 31, 0.055);
+  --checker-line: rgba(28, 36, 31, 0.035);
+  --body-glow: #fff7d6;
+  --grain: radial-gradient(circle at 1px 1px, var(--grain-dot) 1px, transparent 0);
+}
+
+.dark {
+  color-scheme: dark;
+  --color-ink: 241 236 226;
+  --color-moss: 129 191 160;
+  --color-leaf: 116 183 146;
+  --color-rice: 11 17 14;
+  --color-paper: 22 32 26;
+  --color-salmon: 242 139 114;
+  --color-yuzu: 244 201 93;
+  --color-nori: 8 15 11;
+  --color-chili: 244 148 130;
+  --shadow-soft: 0 16px 40px rgba(0, 0, 0, 0.45);
+  --shadow-lift: 0 24px 80px rgba(0, 0, 0, 0.6);
+  --grain-dot: rgba(255, 255, 255, 0.05);
+  --checker-line: rgba(255, 255, 255, 0.06);
+  --body-glow: #1a3426;
 }
 
 * {
@@ -15,8 +48,9 @@ html {
 }
 
 body {
-  background-image: var(--grain), radial-gradient(circle at 8% 0%, #fff7d6 0, transparent 32rem);
+  background-image: var(--grain), radial-gradient(circle at 8% 0%, var(--body-glow) 0, transparent 32rem);
   background-size: 12px 12px, auto;
+  transition: background-color 200ms ease, color 200ms ease;
 }
 
 ::selection {
@@ -25,7 +59,7 @@ body {
 }
 
 :focus-visible {
-  outline: 3px solid #3f7a5d;
+  outline: 3px solid rgb(var(--color-leaf));
   outline-offset: 3px;
 }
 
@@ -37,7 +71,7 @@ select {
 }
 
 input[type="checkbox"] {
-  accent-color: #244f3d;
+  accent-color: rgb(var(--color-leaf));
 }
 
 .safe-bottom {
@@ -55,12 +89,25 @@ input[type="checkbox"] {
 
 .checker {
   background-image:
-    linear-gradient(45deg, rgba(28, 36, 31, 0.035) 25%, transparent 25%),
-    linear-gradient(-45deg, rgba(28, 36, 31, 0.035) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, rgba(28, 36, 31, 0.035) 75%),
-    linear-gradient(-45deg, transparent 75%, rgba(28, 36, 31, 0.035) 75%);
+    linear-gradient(45deg, var(--checker-line) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--checker-line) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checker-line) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checker-line) 75%);
   background-size: 18px 18px;
   background-position: 0 0, 0 9px, 9px -9px, -9px 0;
+}
+
+.dark .bg-moss,
+.dark .bg-leaf {
+  background-color: #2f6b50;
+}
+
+.dark .hover\:bg-nori:hover {
+  background-color: #245a43;
+}
+
+.dark .border-moss {
+  border-color: #4f8a6c;
 }
 
 @media (prefers-reduced-motion: reduce) {

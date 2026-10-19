@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn, formatMoney } from "@/lib/utils";
 import type { OrderStatus, PublicConfig, PublicOrder } from "@/lib/types";
 
@@ -26,7 +27,7 @@ const STATUS_COPY: Record<
     eyebrow: "Ready",
     title: "Your bento is ready.",
     body: "Come on up to the counter and show your pickup code. We will keep it waiting for you.",
-    tone: "bg-yuzu text-ink"
+    tone: "bg-yuzu text-nori"
   },
   PICKED_UP: {
     eyebrow: "Collected",
@@ -114,19 +115,22 @@ export function OrderStatusClient({
         <a href="/" className="flex items-center gap-2.5" aria-label="Gemeshi Bento Lab home">
           <span className="grid h-10 w-10 place-items-center rounded-2xl bg-yuzu text-xl shadow-sm ring-1 ring-ink/10">🍱</span>
           <span>
-            <span className="block font-display text-[15px] font-black leading-none tracking-tight sm:text-lg">Gemeshi Bento Lab</span>
-            <span className="block text-[9px] font-black uppercase tracking-[0.19em] text-leaf">Order tracker</span>
+            <span className="block whitespace-nowrap font-display text-[15px] font-black leading-none tracking-tight sm:text-lg">Gemeshi Bento Lab</span>
+            <span className="block whitespace-nowrap text-[9px] font-black uppercase tracking-[0.19em] text-leaf">Order tracker</span>
           </span>
         </a>
-        <a href="/" className="rounded-full bg-paper px-3.5 py-2 text-xs font-extrabold text-moss shadow-sm ring-1 ring-ink/5">
-          Build another
-        </a>
+        <div className="flex shrink-0 items-center gap-2">
+          <ThemeToggle />
+          <a href="/" className="whitespace-nowrap rounded-full bg-paper px-3.5 py-2 text-xs font-extrabold text-moss shadow-sm ring-1 ring-ink/5">
+            Build another
+          </a>
+        </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-4 sm:px-6">
         {showConfirmation && showPickupCode ? (
           <div className="mb-4 flex items-center gap-3 rounded-2xl border border-leaf/15 bg-leaf/10 px-4 py-3 text-sm font-bold text-moss" role="status">
-            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/70 text-xs">✓</span>
+            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-paper/80 text-xs">✓</span>
             Payment confirmed. Your order is with the kitchen.
           </div>
         ) : null}
@@ -140,7 +144,7 @@ export function OrderStatusClient({
               </h1>
               <p className="mt-3 max-w-md text-sm font-medium leading-relaxed opacity-65">{copy.body}</p>
             </div>
-            <div className={cn("relative grid h-16 w-16 shrink-0 place-items-center rounded-[1.4rem] bg-white/55 text-4xl sm:h-20 sm:w-20 sm:text-5xl", order.status === "READY" && "animate-float")} aria-hidden="true">
+            <div className={cn("relative grid h-16 w-16 shrink-0 place-items-center rounded-[1.4rem] bg-white/55 text-4xl dark:bg-white/10 sm:h-20 sm:w-20 sm:text-5xl", order.status === "READY" && "animate-float")} aria-hidden="true">
               {order.status === "READY" ? "🍱" : order.status === "PICKED_UP" ? "🥢" : order.status === "FAILED" ? "💳" : "👩‍🍳"}
               {order.status === "READY" ? (
                 <span className="absolute -right-1 -top-1 h-3.5 w-3.5 animate-ping rounded-full bg-chili" />
@@ -150,14 +154,14 @@ export function OrderStatusClient({
 
           {showPickupCode ? (
             <div className="mt-6 grid gap-3 sm:grid-cols-[1.2fr_1fr]">
-              <div className="rounded-2xl bg-white/65 p-4 ring-1 ring-black/5">
+              <div className="rounded-2xl bg-paper/85 p-4 ring-1 ring-ink/10">
                 <p className="text-[9px] font-black uppercase tracking-[0.18em] opacity-50">Pickup code</p>
                 <p className="mt-1 font-display text-4xl font-black tracking-[0.09em]" data-testid="pickup-code">
                   {order.orderCode}
                 </p>
                 <p className="mt-1 text-[10px] font-semibold opacity-45">Show this at the counter</p>
               </div>
-              <div className="rounded-2xl bg-white/45 p-4 ring-1 ring-black/5">
+              <div className="rounded-2xl bg-paper/70 p-4 ring-1 ring-ink/10">
                 <p className="text-[9px] font-black uppercase tracking-[0.18em] opacity-50">Pickup</p>
                 <p className="mt-1 text-sm font-black leading-snug">{formatPickup(order.pickupAt, config.timezone)}</p>
                 <p className="mt-1 text-[10px] leading-relaxed opacity-45">{config.storeAddress}</p>

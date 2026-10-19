@@ -18,12 +18,12 @@ describe("demo checkout", () => {
     const quote = await createQuote({
       boxItemId: "demo-box-regular",
       selections: [
-        { itemId: "protein-chicken", quantity: 2 },
-        { itemId: "veg-broccoli", quantity: 2 },
+        { itemId: "protein-karaage", quantity: 2 },
+        { itemId: "veg-mixed-vegetables", quantity: 2 },
         { itemId: "starch-rice", quantity: 1 }
       ]
     });
-    expect(quote.totalCents).toBe(1950);
+    expect(quote.totalCents).toBe(2500);
 
     const settings = await getStoreSettings();
     const slot = generateSlotTimes(settings)[0];
@@ -42,7 +42,7 @@ describe("demo checkout", () => {
 
     const order = await checkout(input);
     expect(order.status).toBe("PAID");
-    expect(order.totalCents).toBe(1950);
+    expect(order.totalCents).toBe(2500);
     expect(order.lines).toHaveLength(3);
 
     const repeated = await checkout({ ...input, paymentToken: "demo-again" });

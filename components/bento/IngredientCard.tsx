@@ -1,5 +1,6 @@
 "use client";
 
+import { ItemImage } from "@/components/bento/ItemImage";
 import { cn, formatMoney } from "@/lib/utils";
 import type { CatalogItem } from "@/lib/types";
 
@@ -25,22 +26,25 @@ export function IngredientCard({ item, quantity, onAdd, onRemove }: IngredientCa
   return (
     <article
       className={cn(
-        "relative flex min-h-[8.25rem] items-stretch gap-3.5 overflow-hidden rounded-[1.35rem] border bg-paper p-3 transition duration-200 sm:p-3.5",
+        "group relative flex min-h-[8.25rem] items-stretch gap-3.5 overflow-hidden rounded-[1.35rem] border bg-paper p-3 transition duration-200 sm:p-3.5",
         selected
-          ? "border-moss/45 bg-moss/[0.035] shadow-[0_8px_24px_rgba(36,79,61,.09)]"
+          ? "border-moss/45 bg-moss/[0.035] shadow-[0_8px_24px_rgba(36,79,61,.09)] dark:shadow-none"
           : "border-ink/8 hover:border-leaf/25 hover:shadow-[0_8px_24px_rgba(28,36,31,.06)]",
         item.soldOut && "opacity-50"
       )}
     >
       <div
-        className="relative grid h-[5.75rem] w-[5.75rem] shrink-0 place-items-center overflow-hidden rounded-[1.25rem] ring-1 ring-black/5 sm:h-24 sm:w-24"
+        className="relative grid h-[5.75rem] w-[5.75rem] shrink-0 place-items-center overflow-hidden rounded-[1.25rem] bg-ink/5 ring-1 ring-black/5 dark:ring-white/10 sm:h-24 sm:w-24"
         style={{ backgroundColor: `${item.color}24` }}
         aria-hidden="true"
       >
-        <span className="checker absolute inset-0 opacity-30" />
-        <span className="relative text-[2.55rem] drop-shadow-sm sm:text-[3rem]">
-          {item.emoji}
-        </span>
+        <span className="checker absolute inset-0 opacity-25" />
+        <ItemImage
+          item={item}
+          sizes="(max-width: 640px) 92px, 96px"
+          className="transition duration-300 group-hover:scale-105"
+          emojiClassName="relative text-[2.55rem] drop-shadow-sm sm:text-[3rem]"
+        />
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col">

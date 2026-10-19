@@ -302,7 +302,7 @@ export function CheckoutPanel({
               type="button"
               onClick={requestClose}
               disabled={submitting}
-              className="grid h-10 w-10 place-items-center rounded-full bg-white text-xl font-bold text-ink/55 shadow-sm ring-1 ring-ink/8 transition hover:bg-ink/5 hover:text-ink disabled:cursor-wait disabled:opacity-40"
+              className="grid h-10 w-10 place-items-center rounded-full bg-paper text-xl font-bold text-ink/55 shadow-sm ring-1 ring-ink/8 transition hover:bg-ink/5 hover:text-ink disabled:cursor-wait disabled:opacity-40"
               aria-label="Close checkout"
             >
               ×

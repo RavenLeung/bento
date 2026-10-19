@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "@/app/globals.css";
+import { THEME_COLORS, THEME_STORAGE_KEY } from "@/lib/theme";
 
 export const metadata: Metadata = {
   title: {
@@ -15,12 +16,17 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#f7f2e8"
+  themeColor: THEME_COLORS.light
 };
+
+const themeInitScript = `(function(){try{var key=${JSON.stringify(THEME_STORAGE_KEY)};var colors=${JSON.stringify(THEME_COLORS)};var saved=localStorage.getItem(key);var theme=saved==="dark"||saved==="light"?saved:(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var root=document.documentElement;root.classList.toggle("dark",theme==="dark");root.style.colorScheme=theme;document.querySelectorAll('meta[name="theme-color"]').forEach(function(meta){meta.setAttribute("content",colors[theme]);});}catch(error){}})();`;
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en-AU">
+    <html lang="en-AU" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="min-h-dvh bg-rice font-body text-ink antialiased">
         {children}
       </body>

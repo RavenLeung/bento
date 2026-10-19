@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function StaffLogin({ storeName }: { storeName: string }) {
   const router = useRouter();
@@ -55,7 +56,10 @@ export function StaffLogin({ storeName }: { storeName: string }) {
   }
 
   return (
-    <main className="flex min-h-dvh items-center justify-center px-4 py-10">
+    <main className="relative flex min-h-dvh items-center justify-center px-4 py-10">
+      <div className="absolute right-4 top-5">
+        <ThemeToggle />
+      </div>
       <div className="w-full max-w-sm">
         <a href="/" className="mx-auto flex w-fit items-center gap-2.5" aria-label="Back to Gemeshi Bento Lab">
           <span className="grid h-11 w-11 place-items-center rounded-2xl bg-yuzu text-2xl shadow-sm ring-1 ring-ink/10">🍱</span>
@@ -88,7 +92,7 @@ export function StaffLogin({ storeName }: { storeName: string }) {
                   required
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  className="w-full rounded-xl border border-ink/12 bg-white px-3.5 py-3 text-sm font-semibold outline-none transition focus:border-leaf focus:ring-2 focus:ring-leaf/15"
+                  className="w-full rounded-xl border border-ink/12 bg-paper px-3.5 py-3 text-sm font-semibold outline-none transition placeholder:text-ink/25 focus:border-leaf focus:ring-2 focus:ring-leaf/15"
                   placeholder="you@example.com"
                 />
               </label>
@@ -114,7 +118,7 @@ export function StaffLogin({ storeName }: { storeName: string }) {
                   autoFocus
                   value={code}
                   onChange={(event) => setCode(event.target.value.replace(/\D/g, ""))}
-                  className="w-full rounded-xl border border-ink/12 bg-white px-3.5 py-3 text-center font-display text-2xl font-black tracking-[0.25em] outline-none transition focus:border-leaf focus:ring-2 focus:ring-leaf/15"
+                  className="w-full rounded-xl border border-ink/12 bg-paper px-3.5 py-3 text-center font-display text-2xl font-black tracking-[0.25em] outline-none transition placeholder:text-ink/25 focus:border-leaf focus:ring-2 focus:ring-leaf/15"
                   placeholder="000000"
                 />
               </label>

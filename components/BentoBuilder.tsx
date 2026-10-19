@@ -7,6 +7,7 @@ import { BentoSheet } from "@/components/bento/BentoSheet";
 import { BentoSummaryTray } from "@/components/bento/BentoSummaryTray";
 import { IngredientCard } from "@/components/bento/IngredientCard";
 import { CheckoutPanel, type SummaryLine } from "@/components/CheckoutPanel";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 import type {
   BentoSection,
@@ -308,10 +309,11 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
         </a>
         <div className="flex items-center gap-2">
           {snapshot?.source === "demo" ? (
-            <span className="whitespace-nowrap rounded-full bg-yuzu/25 px-2 py-1 text-[8px] font-black uppercase tracking-wider text-ink/55 ring-1 ring-yuzu/40 sm:text-[9px]">
+            <span className="hidden whitespace-nowrap rounded-full bg-yuzu/25 px-2 py-1 text-[8px] font-black uppercase tracking-wider text-ink/55 ring-1 ring-yuzu/40 min-[430px]:inline-flex sm:text-[9px]">
               Demo menu
             </span>
           ) : null}
+          <ThemeToggle />
           <a
             href="/staff"
             className="rounded-full px-3 py-2 text-xs font-extrabold text-ink/45 transition hover:bg-ink/5 hover:text-ink"
@@ -338,7 +340,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
             </div>
             <h1 className="mt-4 font-display text-[clamp(2.45rem,9vw,6.7rem)] font-black leading-[0.9] tracking-[-0.055em]">
               Your lunch.
-              <span className="ml-2 inline-block -rotate-2 rounded-2xl bg-yuzu px-2 pb-1 pt-0.5 text-moss sm:ml-4">
+              <span className="ml-2 inline-block -rotate-2 rounded-2xl bg-yuzu px-2 pb-1 pt-0.5 text-nori sm:ml-4">
                 Your rules.
               </span>
             </h1>
@@ -467,7 +469,7 @@ export function BentoBuilder({ config }: { config: PublicConfig }) {
                         </span>
                       </div>
                       {items.length > 0 ? (
-                        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3 xl:grid-cols-3">
+                        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3">
                           {items.map((item) => (
                             <IngredientCard
                               key={item.id}

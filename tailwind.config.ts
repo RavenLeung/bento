@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}"
@@ -8,23 +9,23 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#1c241f",
-        moss: "#244f3d",
-        leaf: "#3f7a5d",
-        rice: "#f7f2e8",
-        paper: "#fffdf8",
-        salmon: "#f28b72",
-        yuzu: "#f4c95d",
-        nori: "#17251e",
-        chili: "#c9553d"
+        ink: "rgb(var(--color-ink) / <alpha-value>)",
+        moss: "rgb(var(--color-moss) / <alpha-value>)",
+        leaf: "rgb(var(--color-leaf) / <alpha-value>)",
+        rice: "rgb(var(--color-rice) / <alpha-value>)",
+        paper: "rgb(var(--color-paper) / <alpha-value>)",
+        salmon: "rgb(var(--color-salmon) / <alpha-value>)",
+        yuzu: "rgb(var(--color-yuzu) / <alpha-value>)",
+        nori: "rgb(var(--color-nori) / <alpha-value>)",
+        chili: "rgb(var(--color-chili) / <alpha-value>)"
       },
       fontFamily: {
         display: ["ui-rounded", "\"Avenir Next\"", "Avenir", "system-ui", "sans-serif"],
         body: ["\"Avenir Next\"", "Avenir", "system-ui", "sans-serif"]
       },
       boxShadow: {
-        soft: "0 16px 40px rgba(28, 36, 31, 0.10)",
-        lift: "0 24px 80px rgba(28, 36, 31, 0.18)"
+        soft: "var(--shadow-soft)",
+        lift: "var(--shadow-lift)"
       },
       opacity: {
         2: "0.02",

@@ -9,8 +9,8 @@ async function addIngredient(page: Page, id: string) {
 test("build, pay, receive and complete a demo order", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByTestId("add-protein-chicken").click();
-  await page.getByTestId("add-veg-broccoli").click();
+  await page.getByTestId("add-protein-karaage").click();
+  await page.getByTestId("add-veg-mixed-vegetables").click();
   await page.getByTestId("add-starch-rice").click();
 
   await page.getByRole("button", { name: "Review & pay" }).first().click();
@@ -49,13 +49,13 @@ test("mobile tray stays visible and opens the bento board", async ({ page }) => 
   await expect(page.getByTestId("tray-fill-count")).toHaveText("0/6");
   await expect(page.getByRole("button", { name: "Review & pay" })).toBeDisabled();
 
-  await addIngredient(page, "protein-chicken");
-  await addIngredient(page, "veg-broccoli");
+  await addIngredient(page, "protein-karaage");
+  await addIngredient(page, "veg-mixed-vegetables");
   await addIngredient(page, "starch-rice");
 
   await expect(page.getByTestId("tray-fill-count")).toHaveText("3/6");
   await expect(page.getByTestId("bento-summary")).toContainText("Regular Bento");
-  await expect(page.getByTestId("tray-total")).toHaveText("$11.00");
+  await expect(page.getByTestId("tray-total")).toHaveText("$14.00");
 
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await expect(tray).toBeVisible();
@@ -72,8 +72,29 @@ test("mobile tray stays visible and opens the bento board", async ({ page }) => 
   await expect(dialog).toBeHidden();
   await expect(page.getByTestId("tray-fill-count")).toHaveText("0/10");
 
-  await addIngredient(page, "protein-chicken");
+  await addIngredient(page, "protein-karaage");
   await expect(page.getByTestId("tray-fill-count")).toHaveText("1/10");
-  await page.getByTestId("remove-protein-chicken").click();
+  await page.getByTestId("remove-protein-karaage").click();
   await expect(page.getByTestId("tray-fill-count")).toHaveText("0/10");
+});
+
+test("dark mode follows the system, toggles, and survives a reload", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto("/");
+
+  const html = page.locator("html");
+  await expect(html).toHaveClass(/dark/);
+  await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute("content", "#0b110e");
+
+  await page.getByTestId("theme-toggle").click();
+  await expect(html).not.toHaveClass(/dark/);
+  await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute("content", "#f7f2e8");
+
+  await page.reload();
+  await expect(html).not.toHaveClass(/dark/);
+
+  await page.getByTestId("theme-toggle").click();
+  await expect(html).toHaveClass(/dark/);
+  await page.reload();
+  await expect(html).toHaveClass(/dark/);
 });

@@ -75,8 +75,8 @@ async function checkoutFixture() {
   const quote = await createQuote({
     boxItemId: "demo-box-regular",
     selections: [
-      { itemId: "protein-chicken", quantity: 2 },
-      { itemId: "veg-broccoli", quantity: 2 },
+      { itemId: "protein-karaage", quantity: 2 },
+      { itemId: "veg-mixed-vegetables", quantity: 2 },
       { itemId: "starch-rice", quantity: 1 }
     ]
   });

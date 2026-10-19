@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn, formatMoney } from "@/lib/utils";
 import type { OrderStatus, StaffOrderView, StoreSettings } from "@/lib/types";
 
@@ -15,7 +16,7 @@ const TAB_LABELS: Record<Tab, string> = {
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
   PENDING_PAYMENT: "bg-ink/8 text-ink/45",
-  PAID: "bg-yuzu/30 text-ink",
+  PAID: "bg-yuzu/30 text-ink dark:text-yuzu",
   READY: "bg-leaf text-white",
   PICKED_UP: "bg-leaf/10 text-moss",
   CANCELED: "bg-ink/8 text-ink/40",
@@ -184,18 +185,19 @@ export function StaffDashboard({
           <div className="flex items-center gap-3">
             <span className="grid h-10 w-10 place-items-center rounded-2xl bg-yuzu text-xl ring-1 ring-ink/10">🍱</span>
             <div>
-              <p className="font-display text-lg font-black leading-none tracking-tight">Kitchen screen</p>
-              <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.16em] text-leaf">
+              <p className="whitespace-nowrap font-display text-lg font-black leading-none tracking-tight">Kitchen screen</p>
+              <p className="mt-1 whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.16em] text-leaf">
                 {settings.acceptingOrders ? "Taking orders" : "Orders paused"}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <span className="hidden text-[10px] font-semibold text-ink/35 sm:block">{staffEmail}</span>
-            <a href="/" className="rounded-full bg-white px-3 py-2 text-[10px] font-extrabold text-ink/50 ring-1 ring-ink/8 hover:text-ink">
-              Customer view
+            <ThemeToggle />
+            <a href="/" aria-label="Open customer view" className="whitespace-nowrap rounded-full bg-paper px-3 py-2 text-[10px] font-extrabold text-ink/50 ring-1 ring-ink/8 hover:text-ink">
+              Menu
             </a>
-            <button type="button" onClick={signOut} className="rounded-full px-2.5 py-2 text-[10px] font-extrabold text-ink/35 hover:text-ink">
+            <button type="button" onClick={signOut} className="whitespace-nowrap rounded-full px-2.5 py-2 text-[10px] font-extrabold text-ink/35 hover:text-ink">
               Sign out
             </button>
           </div>
@@ -207,7 +209,7 @@ export function StaffDashboard({
           <div
             className={cn(
               "mb-4 flex items-start justify-between gap-3 rounded-2xl px-4 py-3 text-xs font-semibold shadow-sm",
-              notice.tone === "good" ? "bg-moss text-white" : "bg-yuzu text-ink"
+              notice.tone === "good" ? "bg-moss text-white" : "bg-yuzu text-nori"
             )}
             role="status"
           >
@@ -237,7 +239,7 @@ export function StaffDashboard({
               <button
                 type="button"
                 onClick={() => setShowSettings((value) => !value)}
-                className="rounded-full border border-ink/10 bg-white px-3.5 py-2 text-xs font-extrabold text-ink/55 transition hover:text-ink"
+                className="rounded-full border border-ink/10 bg-paper px-3.5 py-2 text-xs font-extrabold text-ink/55 transition hover:text-ink"
               >
                 Settings
               </button>
@@ -252,7 +254,7 @@ export function StaffDashboard({
                 }
                 className={cn(
                   "rounded-full px-4 py-2 text-xs font-black shadow-sm transition disabled:opacity-50",
-                  settings.acceptingOrders ? "bg-white text-chili ring-1 ring-chili/15" : "bg-moss text-white"
+                  settings.acceptingOrders ? "bg-paper text-chili ring-1 ring-chili/15" : "bg-moss text-white"
                 )}
               >
                 {settings.acceptingOrders ? "Pause orders" : "Resume orders"}
@@ -361,7 +363,7 @@ function OrderCard({
   return (
     <article
       className={cn(
-        "flex min-h-[18rem] flex-col rounded-2xl border bg-white p-4 shadow-sm",
+        "flex min-h-[18rem] flex-col rounded-2xl border bg-paper p-4 shadow-sm",
         order.status === "READY" ? "border-leaf/40 ring-2 ring-leaf/10" : "border-ink/8",
         late && order.status !== "READY" && "border-chili/30"
       )}
@@ -416,7 +418,7 @@ function OrderCard({
             type="button"
             disabled={busy}
             onClick={onPickedUp}
-            className="w-full rounded-xl bg-yuzu px-4 py-3 text-sm font-black text-ink shadow-sm transition hover:brightness-95 disabled:opacity-50"
+            className="w-full rounded-xl bg-yuzu px-4 py-3 text-sm font-black text-nori shadow-sm transition hover:brightness-95 disabled:opacity-50"
           >
             {busy ? "Updating…" : "Mark picked up"}
           </button>
@@ -452,7 +454,7 @@ function NumberSetting({
         max={max}
         value={value}
         onChange={(event) => onChange(Math.max(min, Math.min(max, Number(event.target.value) || min)))}
-        className="w-full rounded-lg border border-ink/10 bg-white px-2.5 py-2 text-sm font-bold outline-none focus:border-leaf"
+        className="w-full rounded-lg border border-ink/10 bg-paper px-2.5 py-2 text-sm font-bold outline-none focus:border-leaf"
       />
     </label>
   );
@@ -466,7 +468,7 @@ function TimeSetting({ label, value, onChange }: { label: string; value: string;
         type="time"
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded-lg border border-ink/10 bg-white px-2.5 py-2 text-sm font-bold outline-none focus:border-leaf"
+        className="w-full rounded-lg border border-ink/10 bg-paper px-2.5 py-2 text-sm font-bold outline-none focus:border-leaf"
       />
     </label>
   );

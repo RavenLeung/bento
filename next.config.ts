@@ -3,6 +3,15 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   serverExternalPackages: ["postgres"],
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "www.ja2square.com.au",
+        pathname: "/images/thumbs/**"
+      }
+    ]
+  },
   async headers() {
     return [
       {

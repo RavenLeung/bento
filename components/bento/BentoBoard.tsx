@@ -1,5 +1,6 @@
 "use client";
 
+import { ItemImage } from "@/components/bento/ItemImage";
 import { cn, formatMoney } from "@/lib/utils";
 import type { CatalogItem } from "@/lib/types";
 
@@ -76,7 +77,7 @@ export function BentoBoard({
                 "rounded-2xl border px-3 py-2.5 text-left transition",
                 active
                   ? "border-moss bg-moss text-white shadow-sm"
-                  : "border-ink/10 bg-white/60 hover:border-leaf/40",
+                  : "border-ink/10 bg-ink/5 hover:border-leaf/40",
                 option.soldOut && "cursor-not-allowed opacity-40"
               )}
             >
@@ -98,7 +99,7 @@ export function BentoBoard({
           </span>
         </div>
         <div
-          className="grid grid-cols-2 gap-1.5 rounded-[1.2rem] bg-[#e8dcc7] p-1.5 sm:gap-2"
+          className="grid grid-cols-2 gap-1.5 rounded-[1.2rem] bg-[#e8dcc7] p-1.5 dark:bg-[#3a3a31] sm:gap-2"
           aria-label={box ? `${box.name}, ${totalPortions} of ${capacity} portions filled` : "Bento box"}
         >
           {Array.from({ length: capacity }).map((_, index) => {
@@ -107,7 +108,7 @@ export function BentoBoard({
               return (
                 <div
                   key={`empty-${index}`}
-                  className="checker flex aspect-[1.45/1] items-center justify-center rounded-xl border border-dashed border-ink/10 bg-white/25"
+                  className="checker flex aspect-[1.45/1] items-center justify-center rounded-xl border border-dashed border-ink/10 bg-white/25 dark:bg-white/[0.06]"
                   aria-hidden="true"
                 >
                   <span className="text-[10px] font-bold text-ink/20">empty</span>
@@ -124,10 +125,13 @@ export function BentoBoard({
                 className="group relative flex aspect-[1.45/1] animate-pop items-center justify-center overflow-hidden rounded-xl border border-black/5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0"
                 style={{ backgroundColor: portion.item.color }}
               >
-                <span className="text-2xl drop-shadow-sm transition group-hover:scale-90 sm:text-3xl">
-                  {portion.item.emoji}
-                </span>
-                <span className="absolute inset-x-1 bottom-1 truncate text-center text-[8px] font-black uppercase tracking-wide text-nori/65">
+                <ItemImage
+                  item={portion.item}
+                  sizes="(max-width: 640px) 45vw, 180px"
+                  className="transition duration-300 group-hover:scale-105"
+                  emojiClassName="text-2xl drop-shadow-sm transition group-hover:scale-90 sm:text-3xl"
+                />
+                <span className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-nori/90 via-nori/55 to-transparent px-1 pb-1 pt-5 text-center text-[8px] font-black uppercase tracking-wide text-white">
                   {portion.item.name}
                 </span>
               </button>
@@ -190,7 +194,7 @@ export function BentoBoard({
         <button
           type="button"
           onClick={onChefPick}
-          className="rounded-full border border-ink/10 bg-white px-3.5 py-2 text-xs font-extrabold shadow-sm transition hover:-translate-y-0.5 hover:border-leaf/40 hover:shadow-md"
+          className="rounded-full border border-ink/10 bg-paper px-3.5 py-2 text-xs font-extrabold shadow-sm transition hover:-translate-y-0.5 hover:border-leaf/40 hover:shadow-md"
         >
           ✨ Pick For Me
         </button>

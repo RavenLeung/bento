@@ -4,9 +4,9 @@ import { DEMO_CATALOG } from "@/lib/demo-catalog";
 import { AppError } from "@/lib/types";
 
 const regularBox = DEMO_CATALOG.find((item) => item.id === "demo-box-regular")!;
-const chicken = DEMO_CATALOG.find((item) => item.id === "protein-chicken")!;
-const salmon = DEMO_CATALOG.find((item) => item.id === "protein-salmon")!;
-const broccoli = DEMO_CATALOG.find((item) => item.id === "veg-broccoli")!;
+const karaage = DEMO_CATALOG.find((item) => item.id === "protein-karaage")!;
+const porterhouse = DEMO_CATALOG.find((item) => item.id === "protein-porterhouse")!;
+const mixedVegetables = DEMO_CATALOG.find((item) => item.id === "veg-mixed-vegetables")!;
 const rice = DEMO_CATALOG.find((item) => item.id === "starch-rice")!;
 
 function quote(selections: Array<{ itemId: string; quantity: number }>) {
@@ -20,9 +20,9 @@ function quote(selections: Array<{ itemId: string; quantity: number }>) {
 
 describe("buildQuote", () => {
   it("requires at least one protein and one vegetable", () => {
-    expect(() => quote([{ itemId: chicken.id, quantity: 1 }])).toThrowError(AppError);
+    expect(() => quote([{ itemId: karaage.id, quantity: 1 }])).toThrowError(AppError);
     try {
-      quote([{ itemId: chicken.id, quantity: 1 }]);
+      quote([{ itemId: karaage.id, quantity: 1 }]);
     } catch (error) {
       expect(error).toMatchObject({ code: "MINIMUM_NOT_MET" });
     }
@@ -31,36 +31,38 @@ describe("buildQuote", () => {
   it("enforces the selected box capacity", () => {
     expect(() =>
       quote([
-        { itemId: chicken.id, quantity: 4 },
-        { itemId: broccoli.id, quantity: 3 }
+        { itemId: karaage.id, quantity: 4 },
+        { itemId: mixedVegetables.id, quantity: 3 }
       ])
     ).toThrowError(/fits 6 portions/);
   });
 
   it("merges duplicate selections and calculates the total", () => {
     const result = quote([
-      { itemId: chicken.id, quantity: 1 },
-      { itemId: salmon.id, quantity: 1 },
-      { itemId: chicken.id, quantity: 1 },
-      { itemId: broccoli.id, quantity: 2 },
+      { itemId: karaage.id, quantity: 1 },
+      { itemId: porterhouse.id, quantity: 1 },
+      { itemId: karaage.id, quantity: 1 },
+      { itemId: mixedVegetables.id, quantity: 2 },
       { itemId: rice.id, quantity: 1 }
     ]);
 
     expect(result.totalPortions).toBe(6);
-    expect(result.lines.find((line) => line.itemId === chicken.id)?.quantity).toBe(2);
-    expect(result.totalCents).toBe(600 * 2 + 750 + 250 * 2 + 250);
+    expect(result.lines.find((line) => line.itemId === karaage.id)?.quantity).toBe(2);
+    expect(result.totalCents).toBe(
+      karaage.priceCents * 2 + porterhouse.priceCents + mixedVegetables.priceCents * 2 + rice.priceCents
+    );
   });
 
   it("rejects sold-out ingredients with the live catalog price", () => {
     const soldOut = DEMO_CATALOG.map((item) =>
-      item.id === chicken.id ? { ...item, soldOut: true } : item
+      item.id === karaage.id ? { ...item, soldOut: true } : item
     );
     expect(() =>
       buildQuote({
         boxItemId: regularBox.id,
         selections: [
-          { itemId: chicken.id, quantity: 1 },
-          { itemId: broccoli.id, quantity: 1 }
+          { itemId: karaage.id, quantity: 1 },
+          { itemId: mixedVegetables.id, quantity: 1 }
         ],
         catalog: soldOut,
         currency: "AUD"
@@ -70,8 +72,8 @@ describe("buildQuote", () => {
 
   it("allows a box with no starch", () => {
     const result = quote([
-      { itemId: chicken.id, quantity: 2 },
-      { itemId: broccoli.id, quantity: 2 }
+      { itemId: karaage.id, quantity: 2 },
+      { itemId: mixedVegetables.id, quantity: 2 }
     ]);
     expect(result.lines.some((line) => line.section === "starch")).toBe(false);
     expect(result.totalPortions).toBe(4);

@@ -21,8 +21,8 @@ async function createPendingOrder() {
     allergenAcknowledged: true,
     lines: [
       {
-        itemId: "protein-chicken",
-        name: "Teriyaki Chicken",
+        itemId: "protein-karaage",
+        name: "Chicken Karaage",
         section: "protein",
         unitPriceCents: 600,
         quantity: 1,

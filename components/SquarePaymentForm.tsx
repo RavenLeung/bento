@@ -160,7 +160,7 @@ export function SquarePaymentForm({
             </span>
           </div>
           {cardState === "loading" ? (
-            <div className="grid h-[58px] place-items-center rounded-2xl border border-ink/10 bg-white text-xs font-semibold text-ink/40">
+            <div className="grid h-[58px] place-items-center rounded-2xl border border-ink/10 bg-paper text-xs font-semibold text-ink/40">
               Loading secure card form…
             </div>
           ) : null}
@@ -179,7 +179,7 @@ export function SquarePaymentForm({
           <div
             id="square-card-container"
             className={cn(
-              "min-h-[58px] rounded-2xl border border-ink/10 bg-white p-1.5",
+              "min-h-[58px] rounded-2xl border border-ink/10 bg-paper p-1.5",
               cardState !== "ready" && "hidden",
               busy && "pointer-events-none opacity-60"
             )}
