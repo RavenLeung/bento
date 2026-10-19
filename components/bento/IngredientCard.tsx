@@ -34,15 +34,13 @@ export function IngredientCard({ item, quantity, onAdd, onRemove }: IngredientCa
       )}
     >
       <div
-        className="relative grid h-[5.75rem] w-[5.75rem] shrink-0 place-items-center overflow-hidden rounded-[1.25rem] bg-ink/5 ring-1 ring-black/5 dark:ring-white/10 sm:h-24 sm:w-24"
-        style={{ backgroundColor: `${item.color}24` }}
+        className="relative grid h-[5.75rem] w-[5.75rem] shrink-0 place-items-center sm:h-24 sm:w-24"
         aria-hidden="true"
       >
-        <span className="checker absolute inset-0 opacity-25" />
         <ItemImage
           item={item}
           sizes="(max-width: 640px) 92px, 96px"
-          className="transition duration-300 group-hover:scale-105"
+          className="object-contain drop-shadow-[0_8px_10px_rgba(28,36,31,0.18)] transition duration-300 group-hover:scale-105 dark:drop-shadow-[0_8px_12px_rgba(0,0,0,0.55)]"
           emojiClassName="relative text-[2.55rem] drop-shadow-sm sm:text-[3rem]"
         />
       </div>
