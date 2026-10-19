@@ -2,6 +2,10 @@
 
 A mobile-first DIY bento ordering app for pickup. Customers scan a QR code, choose a box, fill it with protein, vegetables, starch and optional sauces, pay with Square, and follow a live order status page. The same order is created in Square Orders so the kitchen can use Square Order Manager / KDS and the back office keeps one source of truth.
 
+## Development
+
+See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for the architecture, local setup, environment variables, business rules, testing, Vercel staging/production deployment and troubleshooting guide.
+
 ## What is included
 
 - **Customer builder** — two free box sizes (Regular 6 dishes, Large 9 dishes), per-ingredient quantities, a separate two-sauce tray, capacity meter, dietary and allergen filters, Pick For Me, GST-inclusive pricing and a playful bento board.
@@ -23,7 +27,7 @@ A mobile-first DIY bento ordering app for pickup. Customers scan a QR code, choo
 | Payments / POS | Square Web Payments SDK + Orders API | Card tokenization in the browser, server-side payment, Orders in Square, KDS-compatible fulfillments. |
 | Email | Resend | Transactional confirmation and ready-to-collect messages. |
 | Hosting | Vercel + Vercel Cron | Simple Next.js deployment; cron drains the outbox and retries webhook work. |
-| Tests | Vitest + Playwright | Domain tests plus one end-to-end demo order flow. |
+| Tests | Vitest + Playwright | 54 unit tests plus 15 end-to-end customer, drag-drop and staff scenarios. |
 
 ## Local demo
 
@@ -162,7 +166,7 @@ The runner records applied files in `schema_migrations`, so it is safe to run on
 - Single store, same-day pickup, English and AUD only.
 - No customer accounts, SMS, delivery, loyalty, multi-store UI or customer-initiated refunds.
 - Abandoned card payments are marked failed by the cleanup job; there is no custom refund workflow.
-- Demo orders are in memory and are not shared across serverless instances.
+- With `DATABASE_URL` blank, demo orders are in memory and are not shared across serverless instances. Staging uses Neon and persists demo orders.
 - Demo mode is only auto-enabled outside production. `DEMO_MODE=true` bypasses staff authentication, so production startup validation rejects it.
 
 ## Project map
