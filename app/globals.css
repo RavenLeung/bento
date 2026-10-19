@@ -53,6 +53,65 @@ body {
   transition: background-color 200ms ease, color 200ms ease;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  html {
+    cursor: url("/chopsticks-cursor.png") 5 27, auto;
+  }
+
+  a,
+  button,
+  label,
+  select,
+  summary,
+  [role="button"],
+  [role="option"],
+  [role="tab"],
+  input[type="checkbox"],
+  input[type="radio"] {
+    cursor: url("/chopsticks-cursor.png") 5 27, pointer;
+  }
+
+  a:hover:not(:active),
+  label:hover:not(:active),
+  select:hover:not(:active),
+  summary:hover:not(:active),
+  [role="button"]:hover:not(:active),
+  [role="option"]:hover:not(:active),
+  [role="tab"]:hover:not(:active),
+  input[type="checkbox"]:hover:not(:active),
+  input[type="radio"]:hover:not(:active),
+  button:hover:not(:active):not(:disabled),
+  .chopsticks-open-target:hover:not(:active) {
+    cursor: url("/chopsticks-cursor-open.png") 8 27, auto;
+  }
+
+  a:active,
+  label:active,
+  select:active,
+  summary:active,
+  [role="button"]:active,
+  [role="option"]:active,
+  [role="tab"]:active,
+  input[type="checkbox"]:active,
+  input[type="radio"]:active,
+  button:active:not(:disabled),
+  .chopsticks-open-target:hover[data-dragging="true"],
+  .chopsticks-open-target:active {
+    cursor: url("/chopsticks-cursor.png") 5 27, auto;
+  }
+
+  input[type="email"],
+  input[type="number"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="text"],
+  textarea {
+    cursor: text;
+  }
+
+}
+
 ::selection {
   background: #f4c95d;
   color: #17251e;

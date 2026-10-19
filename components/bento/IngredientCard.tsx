@@ -91,7 +91,7 @@ export function IngredientCard({ item, quantity, onAdd, onRemove }: IngredientCa
       onContextMenu={(event) => event.preventDefault()}
       className={cn(
         "group relative flex min-h-[8.25rem] touch-manipulation select-none items-stretch gap-3.5 overflow-hidden rounded-[1.35rem] border bg-paper p-3 transition duration-200 [-webkit-touch-callout:none] sm:p-3.5",
-        !item.soldOut && "cursor-grab active:cursor-grabbing",
+        !item.soldOut && "chopsticks-open-target",
         !item.soldOut && !isDragging && "lg:hover:-translate-y-0.5 lg:hover:rotate-[-0.35deg]",
         selected
           ? "border-moss/45 bg-moss/[0.035] shadow-[0_8px_24px_rgba(36,79,61,.09)] dark:shadow-none"
